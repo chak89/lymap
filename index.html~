@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="lymap">
+<head>
+    <meta charset="UTF-8">
+    <title>Lymap</title>
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/styles.css"/>
+    <link rel="manifest" href="manifest.webapp" />
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio"></script>
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/functions.js"></script>
+    <style>
+        #map {
+            height:420px;
+            width:600px;
+        }
+        .infoWindowContent {
+            font-size:  14px !important;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        h2 {
+            margin-bottom:0;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+<div ng-controller="mapController">
+    <div id="map"></div>
+    <div id="class" ng-repeat="unit in orgUnits">
+        <!--<p>{{orgUnits}}</p>-->
+    </div>
+</div>
+
+</body>
+</html>
