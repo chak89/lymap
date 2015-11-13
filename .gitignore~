@@ -18,6 +18,9 @@ local.properties
 .settings/
 .loadpath
 .idea
+.webapp
+.gitignore
+.git
 
 # External tool builders
 .externalToolBuilders/
