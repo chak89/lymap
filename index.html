@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="lymap">
 <head>
+
+    <!--To ensure proper rendering and touch zooming for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <meta charset="UTF-8">
-    <title>Lymap</title>
+    <title>Managing organization units - Lymap</title>
     <link rel="stylesheet" href="css/bootstrap.css"/>
     <link rel="stylesheet" href="css/styles.css"/>
     <link rel="manifest" href="manifest.webapp" />
@@ -17,26 +21,43 @@
     </style>
 </head>
 <body>
-<div class="map-container" ng-controller="mapController">
-    <div class="title">
-        <h1>Lymap Organisation Units</h1>
-    </div>
-    <div id="loader" class="show"></div>
-    <div id="map-wrapper" class="hide">
-        <div id="map"></div>
 
-        <div angucomplete-alt id="ex1"
-             placeholder="Search Organisation Unit"
-             maxlength="50"
-             pause="100"
-             selected-object="unitSelected"
-             local-data="allUnits"
-             search-fields="name"
-             title-field="name"
-             minlength="1"
-             input-class="form-control form-control-small"
-             match-class="highlight">
-        </div>
+
+
+<div class="title">
+    <h1>Lymap Organisation Units</h1>
+</div>
+<br>
+<br>
+<div class="container-fluid">
+    <div id="loader" class="show"></div>
+    <div class="map-container" ng-controller="mapController">
+	<div class="row">
+	    
+	    <!-- Temporary border for map -->
+	    <div class="col-lg-8 col-md-6 col-sm-4" id="borderForMap">
+	      <h2>Organisation map</h2>
+	      <div id="map-wrapper" class="hide"></div>
+	      <div id="map"></div>
+	    </div>
+	    
+	    <!-- Temporary border for search -->
+	    <div class="col-lg-4 col-md-6 col-sm-8 text-center" id="borderForSearch">
+	      <h2>Search</h2>
+	      <div angucomplete-alt id="ex1"
+		  placeholder="Search Organisation Unit"
+		  maxlength="50"
+		  pause="100"
+		  selected-object="unitSelected"
+		  local-data="allUnits"
+		  search-fields="name"
+		  title-field="name"
+		  minlength="1"
+		  input-class="form-control form-control-small"
+		  match-class="highlight">
+	      </div> 
+	    </div>
+	</div>
     </div>
 </div>
 
