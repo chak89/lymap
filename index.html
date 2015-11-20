@@ -7,15 +7,23 @@
 
     <meta charset="UTF-8">
     <title>Managing organization units - Lymap</title>
-    <link rel="stylesheet" href="css/bootstrap.css"/>
-    <link rel="stylesheet" href="css/styles.css"/>
     <link rel="manifest" href="manifest.webapp" />
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio"></script>
+
+        <!-- Bootstrap CSS and Themes-->
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/bootstrap-theme.css"/>
+
+    <!-- Main styling CSS -->
+    <link rel="stylesheet" href="css/styles.css"/>
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio&sensor=true"></script>
     <script type="text/javascript" src="js/markerclusterer.js"></script>
     <script type="text/javascript" src="js/angular.min.js"></script>
     <script type="text/javascript" src="js/angular-resource.min.js"></script>
     <script type="text/javascript" src="js/angucompleter.js"></script>
     <script type="text/javascript" src="js/functions.js"></script>
+
     <style></style>
 </head>
 
@@ -32,11 +40,11 @@
 		<div id="loader" class="show"></div>
 
         <!--- Span rows, required for Bootstrap Grid to work-->
-        <div class="row">
+        <div class="row" ng-controller="mapController">
 
             <!-- Border to the left: Map -->
             <div class="col-lg-8 col-md-8 col-sm-4" id="borderForMap">
-                <div class="map-container" ng-controller="mapController">
+                <div class="map-container">
                   <h2>Organisation map</h2>
                   <div id="map-wrapper" class="hide"></div>
                   <div id="map"></div>
@@ -70,6 +78,24 @@
                     <!-- Menu: Actions box -->
                     <div class="col-lg-12 col-md-12 col-sm-12 borderForMenuOptions">
                         <label class="labelsForMenu">Actions</label>
+                        <div class="row">
+
+
+                          <!--Actions box: Find Me button-->
+                          <div class="col-lg-6 col-md-6 col-sm-6 text-center">
+                            <button type="button" class="btn btn-default btn-md" ng-click="getCurrentLocation()">
+                              <span class="glyphicon glyphicon-map-marker"></span> Find Me
+                            </button>
+                          </div>
+
+                          <!--Actions box: Add new button-->
+                          <div class="col-lg-6 col-md-6 col-sm-6 text-center">
+                            <button type="button" class="btn btn-default btn-md">
+                              <span class="glyphicon glyphicon-plus"></span> Add new
+                            </button>
+                          </div>
+
+                        </div>
                     </div>
 
                     <!-- Menu: Border Options -->

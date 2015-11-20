@@ -59,7 +59,7 @@
 
 
 
-          $scope.Units = orgUnits.getOrgUnits(function(data) {
+        $scope.Units = orgUnits.getOrgUnits(function(data) {
                 $scope.orgUnits = data;
                 $scope.orgUnitId = [];
                 for (var i = 0; i < $scope.orgUnits.organisationUnits.length; i++) {
@@ -99,6 +99,23 @@
                         }
                     }
                 })
+        });
+
+
+
+        $scope.supportsGeo = $window.navigator;
+        $scope.position = null;
+        $scope.getCurrentLocation = function() {
+            window.navigator.geolocation.getCurrentPosition(function(position) {
+                $scope.$apply(function() {
+                    $scope.position = position;
+                    console.log($scope.position);
+                });
+            }, function(error) {
+                alert(error);
             });
+        };
+
+
     });
 })();
