@@ -300,7 +300,7 @@ form input.ng-invalid-autocomplete-required {
 
 
 .map-container {
-    max-width: 90%;
+    max-width: 95%;
     display: block;
     margin: 0 auto;
 }
@@ -354,15 +354,45 @@ form input.ng-invalid-autocomplete-required {
     opacity: 0;
 }
 
+#borderForMap {
+    border-style: inset;
+    border-style: solid;
+    border-width: 5px;
+}
+
 #borderForSearch {
     border-style: inset;
     border-style: solid;
-    border-width: 3px;
-    background: #F0E279;    
+    padding-bottom: 150px;
+    border-width: 0px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    background: #f2faf1;
 }
 
-#borderForMap {
-border-style: inset;
+#borderForMenu {
+    border-style: inset;
     border-style: solid;
-    border-width: 3px;
+    margin-top: 0px;
+    padding-bottom: 20px;
+    border-width: 0px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    background: #c5cdc3;
+}
+
+.borderForMenuOptions {
+    border: solid;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+    background: #e2ebe0
+}
+
+.labelsForMenu{
+    text-align: left;
+    margin-top: 10px;
 }

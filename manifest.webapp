@@ -1,1 +1,27 @@
-{"version":"0.1","name":"My App","description":"My App is a Packaged App","icons":{"16":"/img/icons/mortar-16.png","48":"/img/icons/mortar-48.png","128":"/img/icons/mortar-128.png"},"developer":{"url":"http://me.com","name":"Me","company":null,"email":null},"activities":{"dhis":{"href":"http://localhost:8080","namespace":null}},"folderName":null,"baseUrl":null,"launchUrl":null,"key":null,"launch_path":"/index.html","installs_allowed_from":null,"default_locale":"en"}
+{
+	"version":"0.1",
+	"name":"Lymaps Managing organization units",
+	"description":"This application will provide a search engine, funtionality to add and edit organizational units feature and simple organizational units details information.",
+	"icons": {
+		"16":"/img/icons/mortar-16.png",
+		"48":"/img/icons/mortar-48.png",
+		"128":"/img/icons/mortar-128.png"
+	},
+	"developer":{
+		"url":"https://wiki.uio.no/mn/ifi/inf5750/index.php/Lymap",
+		"name":"Tigran Bagdasaryan, Hichael Mareno Søbstad, Eirik Rodvang Tveterås, Chak Lam Tang",
+		"company":"UIO",
+		"email":null
+	},
+	"activities":{
+		"dhis":{
+			"href":"http://localhost:8080","namespace":null
+		}
+	},
+	"folderName":null,
+	"baseUrl":null,
+	"launchUrl":null,
+	"key":null,
+	"launch_path":"/index.html",
+	"installs_allowed_from":null,
+	"default_locale":"en"}
