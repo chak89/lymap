@@ -18,7 +18,7 @@
         };
 
     })
-        .controller('mapController', function($scope, $http, $location, orgUnits, $q) {
+        .controller('mapController', function($scope, $http, $location, orgUnits, $q, $window) {
 
         //Set map options
         $scope.mapOptions = {
