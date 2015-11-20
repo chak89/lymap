@@ -380,7 +380,7 @@ form input.ng-invalid-autocomplete-required {
     border-right-width: 1px;
     border-bottom-width: 1px;
     border-left-width: 1px;
-    background: #c5cdc3;
+    background: #E9F2E7;
 }
 
 .borderForMenuOptions {
@@ -389,7 +389,7 @@ form input.ng-invalid-autocomplete-required {
     margin-top: 10px;
     padding-bottom: 10px;
     border-radius: 5px;
-    background: #e2ebe0
+    background: #f2faf1
 }
 
 .labelsForMenu{
