@@ -103,6 +103,11 @@
     width: 96%;
 }
 
+#form-group-updated {
+    width: 35%;
+
+}
+
 .container {
     width: 90%;
     margin-left: auto;

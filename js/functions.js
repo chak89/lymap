@@ -117,5 +117,17 @@
         };
 
 
+        $scope.output;
+        $scope.addActivated = 0;
+        $scope.addFacility = function() {
+            $scope.addActivated = 1;
+            $scope.output = "Addding facility...";
+
+        }
+
+
+
+
+
     });
 })();
