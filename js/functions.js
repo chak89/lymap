@@ -122,6 +122,18 @@
         $scope.name = "Hichael";
         $scope.ready = false;
         $scope.orgName = "Ernst's facility";
+        $scope.formInput;
+
+
+        $scope.invokeForm = function() {
+
+        }
+
+        $scope.submitForm = function() {
+
+            formInput = "Hichael's Gym";
+
+        }
 
 
         var initializeListener = function() {
@@ -130,6 +142,7 @@
             google.maps.event.addListener($scope.map, 'click', function(event) {
 
             if($scope.ready === true) {
+
 
                 //Get the coordinates 
 
