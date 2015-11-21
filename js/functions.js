@@ -22,7 +22,7 @@
 
         //Set map options
         $scope.mapOptions = {
-            zoom: 4,
+            zoom: 2,
             center: new google.maps.LatLng(9.0131, -12.9487),
             mapTypeId: google.maps.MapTypeId.TERRAIN
         };
@@ -104,20 +104,43 @@
 
         
 
+        /**************** Find Me button geolocation - Chak ongoing *******************/
+        $scope.currentLocation = "Current Location";
         $scope.supportsGeo = $window.navigator;
         $scope.position = null;
+        $scope.waitForPositionMessage = "";
+
         $scope.getCurrentLocation = function() {
+            $scope.waitForPositionMessage = "Getting position, will plot to map when ready!";
             window.navigator.geolocation.getCurrentPosition(function(position) {
                 $scope.$apply(function() {
                     $scope.position = position;
-                    console.log($scope.position);
+                    //console.log($scope.position);
+                    //console.log($scope.position.coords.latitude);
+                    //console.log($scope.position.coords.longitude);
+
+                    $scope.$watch($scope.position, function() {
+
+                        //Create marker
+                        m = new google.maps.Marker({
+                        map: $scope.map,
+                        position: new google.maps.LatLng($scope.position.coords.latitude,$scope.position.coords.longitude),
+                        title: $scope.currentLocation
+                        });
+                        $scope.waitForPositionMessage = "";
+                    });
+
                 });
             }, function(error) {
+                $scope.waitForPositionMessage = "";
                 alert(error);
             });
         };
+        /**************************************************************************/
 
 
+
+        /************************ Add Facility etc: Hichael ongoing ****************/
         $scope.output = "Waiting";
         $scope.name = "Hichael";
         $scope.ready = false;
@@ -201,15 +224,17 @@
 
         };
 
+
+
         initializeListener();
 
         // Add a new facility
-
         $scope.addFacility = function() {
          
             $scope.output = "Adding facility...";
             $scope.ready = true;
         }
+        /*************************************************************************/
 
 
     });
