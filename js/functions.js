@@ -102,6 +102,7 @@
         });
 
 
+        
 
         $scope.supportsGeo = $window.navigator;
         $scope.position = null;
@@ -118,15 +119,59 @@
 
 
         $scope.output;
-        $scope.addActivated = 0;
+        $scope.name = "Hichael";
+        $scope.orgName = "Ernst's facility";
+
+
+        // Add a new facility
+
         $scope.addFacility = function() {
-            $scope.addActivated = 1;
-            $scope.output = "Addding facility...";
+         
+            $scope.output = "Adding facility...";
+
+           
+            google.maps.event.addListener($scope.map, 'click', function(event) {
+
+
+            $scope.$watch($scope.map, function() {
+            alert('Added the organisation ' + $scope.orgName + ' to the system.');
+            });
+
+            //Get the coordinates and create an array
+
+            coords = event.latLng;
+
+            console.log(coords);
+
+             $scope.lats = coords.lat();
+             $scope.longs = coords.lng();
+
+            console.log($scope.lats);
+            console.log($scope.longs);
+
+            //Create marker
+                m = new google.maps.Marker({
+                map: $scope.map,
+                position: new google.maps.LatLng($scope.lats,$scope.longs),
+                title: $scope.orgName
+            });
+
+            //InfoWIndow Content
+            m.content = '<div class="infoWindowContent">' + $scope.orgName + '</div>';
+
+         
+            $scope.markers.push(m);
+                    
+            console.log("Finished creating markers");
+
+            
+             $scope.$apply();
+
+
+            });
+
 
         }
-
-
-
 
 
     });
