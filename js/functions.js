@@ -121,7 +121,7 @@
         $scope.output = "Waiting";
         $scope.name = "Hichael";
         $scope.ready = false;
-        $scope.orgName = "Ernst's facility";
+        $scope.orgName = "Default";
         $scope.formInput;
 
 
@@ -131,7 +131,9 @@
 
         $scope.submitForm = function() {
 
-            formInput = "Hichael's Gym";
+            if($scope.ready === true) {
+            $scope.orgName = $scope.formInput;
+            }
 
         }
 
