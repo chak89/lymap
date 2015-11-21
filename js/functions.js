@@ -123,6 +123,7 @@
         $scope.ready = false;
         $scope.orgName = "Default";
         $scope.formInput;
+        $scope.submitFinished = false;
 
 
         $scope.invokeForm = function() {
@@ -133,6 +134,10 @@
 
             if($scope.ready === true) {
             $scope.orgName = $scope.formInput;
+            $scope.submitFinished = true;
+            } else {
+
+                alert('No input in textfield!');
             }
 
         }
@@ -143,7 +148,7 @@
           
             google.maps.event.addListener($scope.map, 'click', function(event) {
 
-            if($scope.ready === true) {
+            if($scope.ready === true && $scope.submitFinished === true) {
 
 
                 //Get the coordinates 
@@ -170,6 +175,7 @@
             console.log("Finished creating markers");
 
             $scope.ready = false;
+            $scope.submitFinished = false;
             $scope.output = "Waiting";
 
               $scope.$watch($scope.map, function() {
@@ -180,6 +186,8 @@
             $scope.$apply();
 
 
+            } else {
+                alert('Please input desired name in textfield and press submit');
             }
 
 
