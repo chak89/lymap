@@ -167,6 +167,12 @@
                 title: $scope.orgName
             });
 
+                //click event with info window
+            google.maps.event.addListener(m, 'click', function(){
+                $scope.infoWindow.setContent('<h2>' + this.title + '</h2>' + this.content);
+                $scope.infoWindow.open($scope.map, this);
+            });
+
             //InfoWIndow Content
             m.content = '<div class="infoWindowContent">' + $scope.orgName + '</div>';
          
