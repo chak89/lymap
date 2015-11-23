@@ -215,9 +215,7 @@
             $scope.$apply();
 
 
-            } else {
-                alert('Please input desired name in textfield and press submit');
-            }
+            } 
 
 
             });

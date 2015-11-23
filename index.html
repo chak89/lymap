@@ -29,9 +29,10 @@
 
 <body>
 	
-<!-- Navigation Bar - Eirik in progress-->
-  <nav class="navbar navbar-default">
+ <!-- Navigation Bar - Eirik in progress-->
+ <nav class="navbar navbar-default">
    <div class="container-fluid">
+    <div class="row0" ng-controller="mapController">
      <div class="navbar-header">
        <a class="navbar-brand" href="#">
         <p><b>Lymap Organisation units</b>.</p>
@@ -41,28 +42,39 @@
     <form class="navbar-form navbar-left" role="search">
       <div class="form-group">
         <div class="input-group" style="width: 200px;">
-         
-         <input type="text" class="form-control" placeholder="Search for facility..">
 
-         <span class="input-group-btn">
-          <button class="btn btn-default" type="button">Go!</button>
-        </span>
+         <angucomplete-alt id="ex0"
+         placeholder="Search Organisation Unit"
+         maxlength="50"
+         pause="100"
+         selected-object="unitSelected"
+         local-data="allUnits"
+         search-fields="name"
+         title-field="name"
+         minlength="1"
+         input-class="form-control form-control-small"
+         match-class="highlight">
+       </angucomplete-alt>
 
-      </div>
+
+       <span class="input-group-btn">
+        <button class="btn btn-default" type="button">Go!</button>
+      </span>
+
     </div>
-  </form>
+  </div>
+</form>
 
+</div>
 </div> 
 </nav>
-
-<!-- END NAVIGATION -->
 
 	<br>
     <!-- Container for the whole thing-->
 	<div class="container-fluid">
 
         <!-- icon loading before disappearing-->
-		<<!--<div id="loader" class="show"></div> -->
+		<!--<div id="loader" class="show"></div> -->
 
         <!--- Span rows, required for Bootstrap Grid to work-->
         <div class="row" ng-controller="mapController">
