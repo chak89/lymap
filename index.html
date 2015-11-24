@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="css/styles.css"/>
 
 
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio&sensor=true"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio"></script>
     <script type="text/javascript" src="js/markerclusterer.js"></script>
     <script type="text/javascript" src="js/angular.min.js"></script>
     <script type="text/javascript" src="js/angular-resource.min.js"></script>
@@ -28,11 +28,11 @@
 </head>
 
 <body>
-	
+	<div ng-controller="mapController">
  <!-- Navigation Bar - Eirik in progress-->
  <nav class="navbar navbar-default">
    <div class="container-fluid">
-    <div class="row0" ng-controller="mapController">
+    <div class="row0">
      <div class="navbar-header">
        <a class="navbar-brand" href="#">
         <p><b>Lymap Organisation units</b>.</p>
@@ -77,13 +77,13 @@
 		<!--<div id="loader" class="show"></div> -->
 
         <!--- Span rows, required for Bootstrap Grid to work-->
-        <div class="row" ng-controller="mapController">
+        <div class="row">
 
             <!-- Border to the left: Map -->
             <div class="col-lg-8 col-md-8 col-sm-4" id="borderForMap">
                 <div class="map-container">
                   <h2>Organisation map</h2>
-                  <div id="map-wrapper" class="hide"></div>
+                  <!--<div id="map-wrapper" class="hide"></div>-->
                   <div id="map"></div>
                 </div>
             </div>
@@ -99,7 +99,7 @@
                   <div class="form-group">
                     <label class="col-md-4 control-label" for="textinput">Name</label>  
                     <div class="col-md-4">
-                      <input ng-model="formInput" name="textinput" type="text" placeholder="organisation" class="form-control input-md">
+                      <input id="textinput" ng-model="formInput" name="textinput" type="text" placeholder="organisation" class="form-control input-md">
                       <span class="help-block">Submit when finished</span>
                     </div>
                   </div>
@@ -116,25 +116,8 @@
               <!-- hichael console  -->
               <div id="form-group-updated">
                <label for="inputlg">State</label>
-               <input class="form-control input-lg" ng-model="output" type="text">
+               <input id="inputlg" class="form-control input-lg" ng-model="output" type="text">
               </div>
-
-                <!-- Temporary border for search -->
-                <div class="col-lg-12 col-md-12 col-sm-12" id="borderForSearch">
-                  <h2 align="center">Search</h2>
-                  <div angucomplete-alt id="ex1"
-                  placeholder="Search Organisation Unit"
-                  maxlength="50"
-                  pause="100"
-                  selected-object="unitSelected"
-                  local-data="allUnits"
-                  search-fields="name"
-                  title-field="name"
-                  minlength="1"
-                  input-class="form-control form-control-small"
-                  match-class="highlight">
-                  </div>
-                </div>
 
                 <!-- Menu box -->
                 <div class="col-lg-12 col-md-12 col-sm-12" id="borderForMenu">
@@ -194,6 +177,7 @@
             </div>
 		</div>
 	</div>
+        </div>
 
 </body>
 </html>

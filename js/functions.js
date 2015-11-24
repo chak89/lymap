@@ -81,10 +81,10 @@
                     $scope.mc = new MarkerClusterer($scope.map, $scope.markers, {
                         maxZoom: 18
                     });
-                    var loader = document.getElementById('loader'),
-                        map_wrapper = document.getElementById('map-wrapper');
-                    loader.className = "hide";
-                    map_wrapper.className = "show";
+                    //var loader = document.getElementById('loader'),
+                    //    map_wrapper = document.getElementById('map-wrapper');
+                    //loader.className = "hide";
+                    //map_wrapper.className = "show";
                     google.maps.event.trigger($scope.map, "resize");
 
                     //autocompleter select unit and zoom/openInfoWindow
@@ -93,7 +93,7 @@
                             for (var i = 0; i < $scope.markers.length; i++) {
                                 if ($scope.markers[i].title === selected.title) {
                                     google.maps.event.trigger($scope.markers[i], 'click');
-                                    $scope.map.setZoom(16);
+                                    $scope.map.setZoom(15);
                                 }
                             }
                         }
