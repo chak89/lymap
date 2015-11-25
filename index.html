@@ -24,50 +24,68 @@
     <script type="text/javascript" src="js/angucompleter.js"></script>
     <script type="text/javascript" src="js/functions.js"></script>
 
+    <!-- test imports -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+
     <style></style>
 </head>
 
 <body>
 	<div ng-controller="mapController">
+ 
  <!-- Navigation Bar - Eirik in progress-->
  <nav class="navbar navbar-default">
    <div class="container-fluid">
-    <div class="row0">
+
      <div class="navbar-header">
        <a class="navbar-brand" href="#">
         <p><b>Lymap Organisation units</b>.</p>
       </a>
     </div><!-- navbar-header -->
 
-    <form class="navbar-form navbar-left" role="search">
-      <div class="form-group">
-        <div class="input-group" style="width: 200px;">
+    <div class="collapse navbar-collapse" id="navcol1">
+      <ul class="nav navbar-nav">
 
-         <angucomplete-alt id="ex0"
-         placeholder="Search Organisation Unit"
-         maxlength="50"
-         pause="100"
-         selected-object="unitSelected"
-         local-data="allUnits"
-         search-fields="name"
-         title-field="name"
-         minlength="1"
-         input-class="form-control form-control-small"
-         match-class="highlight">
-       </angucomplete-alt>
+        <form class="navbar-form navbar-left" role="search">
+         <div class="form-group">
+            <div class="input-group" style="width: 200px;">
 
+              <angucomplete-alt id="angu1"
+                placeholder="Search Organisation Unit"
+                maxlength="50"
+                pause="100"
+                selected-object="unitSelected"
+                local-data="allUnits"
+                search-fields="name"
+                title-field="name"
+                minlength="1"
+                input-class="form-control form-control-small"
+                match-class="highlight">
+              </angucomplete-alt>
 
-       <span class="input-group-btn">
-        <button class="btn btn-default" type="button">Go!</button>
-      </span>
+             </div>
+           </div>
+        </form>
 
-    </div>
-  </div>
-</form>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            Filter search <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li id="filterText">Filter by level</li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Level 1</a></li>
+            <li><a href="#">Level 2</a></li>
+            <li><a href="#">Level 3</a></li>
+          </ul>
+        </li><!-- dropdown -->
+      
+      </ul>
+    </div><!-- navbar collapse -->
 
-</div>
-</div> 
-</nav>
+  </div><!-- container fluid-->
+</nav><!-- navbar -->
 
 	<br>
     <!-- Container for the whole thing-->

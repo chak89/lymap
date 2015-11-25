@@ -137,10 +137,10 @@
 }
 
 .dropdown {
-    width: 53px;
+    width: 160px;
     position: absolute;
-    right: 4px;
-    top: 50px;
+    right: 33px;
+    top: 0px;
     z-index: 100;
     padding: 0px;
     text-align: left;
@@ -396,4 +396,8 @@ form input.ng-invalid-autocomplete-required {
 .labelsForMenu{
     text-align: left;
     margin-top: 10px;
+}
+
+#filterText {
+    text-align: center;
 }
