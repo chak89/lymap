@@ -14,6 +14,17 @@
                         method: 'GET',
                         isArray: true
                     });
+                },
+
+                getLevels: function(returnedData) {
+                    $http.get('http://localhost:8080/api/organisationUnitLevels.json?paging=false&links=false').success(returnedData);
+                },
+
+                getLevel: function() {
+                    return $resource('http://localhost:8080/api/organisationUnitLevels/:name', {name: '@name'}, {
+                        method: 'GET',
+                        isArray: true
+                    });
                 }
         };
 
@@ -236,10 +247,18 @@
         /*************************************************************************/
 
 
-        /************************ Filter by level Eirik ongoing ****************/
-        $scope.filterByLevel = function() {
+        /************************ get levels Eirik ongoing ****************/
+        
+        $scope.Levels = orgUnits.getLevels(function(data) {
+            $scope.levels = data;
+            $scope.levelNames = [];
+            
+            for (var i = 0; i < $scope.levels.organisationUnitLevels.length; i++) {
+                //Iterate and get each unit one by one, put into levelNames array
+                $scope.levelNames.push($scope.levels.organisationUnitLevels[i].name);
+            }
 
-        }
+        });
 
 
     });
