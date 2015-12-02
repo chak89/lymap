@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="lymap">
+<html lang="en">
 <head>
 
     <!--To ensure proper rendering and touch zooming for mobile-->
@@ -19,184 +19,73 @@
 
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio"></script>
     <script type="text/javascript" src="js/markerclusterer.js"></script>
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="js/angular.min.js"></script>
     <script type="text/javascript" src="js/angular-resource.min.js"></script>
+    <script type="text/javascript" src="js/angular-animate.min.js"></script>
+    <script type="text/javascript" src="js/ui-bootstrap-tpls-0.14.3.min.js"></script>
     <script type="text/javascript" src="js/angucompleter.js"></script>
     <script type="text/javascript" src="js/functions.js"></script>
 
-    <!-- test imports -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-
-    <style></style>
 </head>
 
-<body>
-	<div ng-controller="mapController">
+<body ng-app="lymap">
+	<div ng-controller="mapController" >
  
- <!-- Navigation Bar - Eirik in progress-->
- <nav class="navbar navbar-default">
-   <div class="container-fluid">
+     <!-- Navigation Bar - Eirik in progress-->
+       <div class="container-fluid">
 
-     <div class="navbar-header">
-       <a class="navbar-brand" href="https://wiki.uio.no/mn/ifi/inf5750/index.php/Lymap">
-        <p><b>Lymap Organisation units</b>.</p>
-      </a>
-    </div><!-- navbar-header -->
+         <div class="navbar-header">
+           <a class="navbar-brand" href="https://wiki.uio.no/mn/ifi/inf5750/index.php/Lymap">
+            <p><b>Lymap Organisation units</b>.</p>
+          </a>
+        </div><!-- navbar-header -->
 
-    <div class="collapse navbar-collapse" id="navcol1">
-      <ul class="nav navbar-nav">
+             <div class="form-group">
+                <div class="input-group" style="width: 200px;">
 
-        <form class="navbar-form navbar-left" role="search">
-         <div class="form-group">
-            <div class="input-group" style="width: 200px;">
+                  <angucomplete-alt id="angu1"
+                    placeholder="Search Organisation Unit"
+                    maxlength="50"
+                    pause="100"
+                    selected-object="unitSelected"
+                    local-data="searchUnits"
+                    search-fields="name"
+                    title-field="name"
+                    minlength="1"
+                    input-class="form-control form-control-small"
+                    match-class="highlight">
+                  </angucomplete-alt>
 
-              <angucomplete-alt id="angu1"
-                placeholder="Search Organisation Unit"
-                maxlength="50"
-                pause="100"
-                selected-object="unitSelected"
-                local-data="allUnits"
-                search-fields="name"
-                title-field="name"
-                minlength="1"
-                input-class="form-control form-control-small"
-                match-class="highlight">
-              </angucomplete-alt>
+                 </div>
+               </div>
 
-             </div>
-           </div>
-        </form>
+              <select name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
+                  <option value="">Please Select</option>
+                  <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
+              </select>
+              <div id="map"></div>
+           <script type="text/ng-template" id="editUnitContent.html">
+               <form role="form" ng-submit="updateUnit()">
+                    <input type="text" ng-model="editUnit.name" id="name" />
+                    <input type="text" ng-model="editUnit.shortName" id="shortName" />
+                   <input type="date" id="openingDate" datetime="MM/dd/YYYY" name="input" ng-model="editUnit.openingDate"
+                          placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
+                   <select name="eLevel"  ng-model="editUnit.level" ng-options="level.name for level in allLevels track by level.level">
+                   </select>
+                   <input type="submit" class="btn btn-primary" value="Save"/>
+               </form>
+               <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+           </script>
 
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-            Filter search <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li id="filterText">Filter by level</li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">{{levelNames[0]}}</a></li>
-            <li><a href="#">{{levelNames[1]}}</a></li>
-            <li><a href="#">{{levelNames[2]}}</a></li>
-            <li><a href="#">{{levelNames[3]}}</a></li>
-          </ul>
-        </li><!-- dropdown -->
-      
-      </ul>
-    </div><!-- navbar collapse -->
+           <script type="text/ng-template" id="addUnitContent.html">
+               <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+           </script>
 
-  </div><!-- container fluid-->
-</nav><!-- navbar -->
-
-	<br>
-    <!-- Container for the whole thing-->
-	<div class="container-fluid">
-
-        <!-- icon loading before disappearing-->
-		<!--<div id="loader" class="show"></div> -->
-
-        <!--- Span rows, required for Bootstrap Grid to work-->
-        <div class="row">
-
-            <!-- Border to the left: Map -->
-            <div class="col-lg-8 col-md-8 col-sm-4" id="borderForMap">
-                <div class="map-container">
-                  <h2>Organisation map</h2>
-                  <!--<div id="map-wrapper" class="hide"></div>-->
-                  <div id="map"></div>
-                </div>
-            </div>
+      </div><!-- container fluid-->
+</div>
 
 
-            <!-- Formset Hihcael ongoing -->
-            <form class="form-horizontal">
-              <fieldset>
-                  <!-- Form Name -->
-                  <legend>Organisation Parameters</legend>
-
-                  <!-- Text input-->
-                  <div class="form-group">
-                    <label class="col-md-4 control-label" for="textinput">Name</label>  
-                    <div class="col-md-4">
-                      <input id="textinput" ng-model="formInput" name="textinput" type="text" placeholder="organisation" class="form-control input-md">
-                      <span class="help-block">Submit when finished</span>
-                    </div>
-                  </div>
-              </fieldset>
-            </form>
-
-
-            
-
-            <!-- Border to the right: Menu, Search and other options -->
-            <div class="col-lg-4 col-md-4 col-sm-8">
-
-
-              <!-- hichael console  -->
-              <div id="form-group-updated">
-               <label for="inputlg">State</label>
-               <input id="inputlg" class="form-control input-lg" ng-model="output" type="text">
-              </div>
-
-                <!-- Menu box -->
-                <div class="col-lg-12 col-md-12 col-sm-12" id="borderForMenu">
-                    <h2 align="center">Menu</h2>
-
-                    <!-- Menu: Actions box -->
-                    <div class="col-lg-12 col-md-12 col-sm-12 borderForMenuOptions">
-                        <label class="labelsForMenu">Actions</label>
-                        <div class="row">
-
-
-                          <!--Actions box: Find Me button-->
-                          <div class="col-lg-6 col-md-6 col-sm-6 text-center">
-                            <button type="button" class="btn btn-default btn-md" ng-click="getCurrentLocation()">
-                              <span class="glyphicon glyphicon-map-marker"></span> Find Me
-                            </button>
-                            <div class="col-lg-6 col-md-6 col-sm-6">{{ waitForPositionMessage }}</div>
-                          </div>
-
-                          <!--Actions box: Add new button-->
-                          <div class="col-lg-6 col-md-6 col-sm-6 text-center">
-                            <button type="button" class="btn btn-default btn-md" ng-click="addFacility()">
-                              <span class="glyphicon glyphicon-plus"></span> Add facility
-                            </button>
-                          </div>
-
-                          <!--Actions box: Submit form button-->
-                          <div class="col-lg-6 col-md-6 col-sm-6 text-center">
-                            <button type="button" class="btn btn-default btn-md" ng-click="submitForm()">
-                              <span class="glyphicon glyphicon-plus"></span> Submit
-                            </button>
-                          </div>
-
-                        </div>
-                    </div>
-
-                    <!-- Menu: Border Options -->
-                    <div class="col-lg-12 col-md-12 col-sm-12 borderForMenuOptions">
-                        <label class="labelsForMenu">Border options</label>
-                    </div>
-
-                    <!-- Menu: Filter results -->
-                    <div class="col-lg-12 col-md-12 col-sm-12 borderForMenuOptions">
-                        <label class="labelsForMenu">Filter results</label>
-                    </div>
-
-
-                    <!-- TESTING! Menu: Coordinates -->
-                    <div class="col-lg-12 col-md-12 col-sm-12 borderForMenuOptions">
-                        <label class="labelsForMenu">Coordinates</label>
-                        <p>Latitude:</p> {{ position.coords.latitude }}
-                        <p>Longitude:</p> {{ position.coords.longitude }}
-                    </div>
-
-
-                </div>
-            </div>
-		</div>
-	</div>
-        </div>
 
 </body>
 </html>
