@@ -1,6 +1,24 @@
+.input-group {
+    width: 400px;
+    left: 70px;
+}
+
 .angucomplete-holder {
     position: relative;
+    float: left;
+    border: 1px solid black;
 }
+
+#angu1 {
+    padding-top: 8px;
+}
+
+#dropdownMenu1 {
+    position: relative;
+    padding: 8px;
+    left: 0.5px;
+}
+
 
 .angucomplete-dropdown {
     border-color: #ececec;
@@ -436,4 +454,5 @@ form input.ng-invalid-autocomplete-required {
     transition: all 0.25s;
     cursor: pointer;
 }
+
 
