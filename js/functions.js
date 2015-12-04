@@ -398,20 +398,20 @@
             //name,shortName, openingDate are mandatory, also make openingDate have to autofill with format YY-MM-DD
             //Traditional way of POSTING data
             //Fetch data from modal addUnit form
+            
+            
             $scope.addUnit = function(orgUnitData) {
 
                 var postData = {
-                    "name" : orgUnitData.name,
+                    "name" : orgUnitData.nname,
                     "shortName" : orgUnitData.shortName,
                     "level" : orgUnitData.level,
-                    "parent": {"id":"v7sCaLmDH3G", "name": "bo"}
-                    "description" : orgUnitData.description,
-                    "code" : orgUnitData.code,
+                    "parent": {"id":"v7sCaLmDH3G", "name": "bo"},
+                    "description" : orgUnitData.ddescription,
+                    "code" : orgUnitData.ccode,
                     "openingDate" : orgUnitData.openingDate,
                     "comment" : orgUnitData.comment,
                     "coordinates" : "[" + orgUnitData.longitude+ "," + orgUnitData.latitude + "]",
-                    //"longitude" : orgUnitData.longitude,
-                   //"latitude" : orgUnitData.latitude,
                     "url" : orgUnitData.url,
                     "contactPerson" : orgUnitData.contactPerson,
                     "address" : orgUnitData.address,
@@ -433,13 +433,10 @@
                     alert("Create success");
                     $scope.orgUnitData = undefined;
                 }).error(function(data, status) {
-                    alert("Create error";
+                    alert("Create error");
                 });
             };
-
-
-
-
+            
 
 
             //close modals if clicked somewhere or cancelled
