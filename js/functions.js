@@ -269,7 +269,7 @@
         
 
         /**************** Find Me button geolocation - Chak ongoing *******************/
-        $scope.currentLocation = "Current Location";
+/*        $scope.currentLocation = "Current Location";
         $scope.supportsGeo = $window.navigator;
         $scope.position = null;
         $scope.waitForPositionMessage = "";
@@ -299,8 +299,7 @@
                 $scope.waitForPositionMessage = "";
                 alert(error);
             });
-        };
-
+        };  */
       
 
         /************************ get levels Eirik ****************/
@@ -392,6 +391,56 @@
              //   $scope.addUnit.$update();
             //    $uibModalInstance.dismiss('cancel');
             //};
+
+
+
+            //TODO: Fix references to different parent levels.
+            //name,shortName, openingDate are mandatory, also make openingDate have to autofill with format YY-MM-DD
+            //Traditional way of POSTING data
+            //Fetch data from modal addUnit form
+            $scope.addUnit = function(orgUnitData) {
+
+                var postData = {
+                    "name" : orgUnitData.name,
+                    "shortName" : orgUnitData.shortName,
+                    "level" : orgUnitData.level,
+                    "parent": {"id":"v7sCaLmDH3G", "name": "bo"}
+                    "description" : orgUnitData.description,
+                    "code" : orgUnitData.code,
+                    "openingDate" : orgUnitData.openingDate,
+                    "comment" : orgUnitData.comment,
+                    "coordinates" : "[" + orgUnitData.longitude+ "," + orgUnitData.latitude + "]",
+                    //"longitude" : orgUnitData.longitude,
+                   //"latitude" : orgUnitData.latitude,
+                    "url" : orgUnitData.url,
+                    "contactPerson" : orgUnitData.contactPerson,
+                    "address" : orgUnitData.address,
+                    "email" : orgUnitData.email,
+                    "phoneNumber" : orgUnitData.phoneNumber
+                };
+
+                var request = $http( {
+                    method: "POST",
+                    url: "http://localhost:8082/api/organisationUnits/",
+                    data: postData,
+                    headers: {
+                        'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                request.success(function(data) {
+                    alert("Create success");
+                    $scope.orgUnitData = undefined;
+                }).error(function(data, status) {
+                    alert("Create error";
+                });
+            };
+
+
+
+
+
 
             //close modals if clicked somewhere or cancelled
             $uibModalInstance.result.then(function(){}, function() {

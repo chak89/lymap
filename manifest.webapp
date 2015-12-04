@@ -3,9 +3,8 @@
 	"name":"Lymaps Managing organization units",
 	"description":"This application will provide a search engine, funtionality to add and edit organizational units feature and simple organizational units details information.",
 	"icons": {
-		"16":"/img/icons/mortar-16.png",
-		"48":"/img/icons/mortar-48.png",
-		"128":"/img/icons/mortar-128.png"
+		"48":"/img/icons/bf-48.png",
+		"128":"/img/icons/bf-128.png"
 	},
 	"developer":{
 		"url":"https://wiki.uio.no/mn/ifi/inf5750/index.php/Lymap",
