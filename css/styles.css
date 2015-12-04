@@ -1,8 +1,9 @@
+.navbar {
+    margin-bottom: 0;
+}
+
 .navbar-default {
     width: 100%;
-}
-.map{
-    width:90%;
 }
 
 .input-group {

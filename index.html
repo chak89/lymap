@@ -33,7 +33,7 @@
 	<div ng-controller="mapController" >
  
      <!-- Navigation Bar - Eirik in progress-->
-<nav class="navbar navbar-default">
+     <nav class="navbar navbar-default">
 
        <div class="container-fluid">
          <div class="navbar-header">
@@ -42,36 +42,38 @@
           </a>
         </div><!-- navbar-header -->
 
-             <div class="form-group">
-                <div class="input-group">
+        <div class="form-group">
+         <div class="input-group">
 
-                  <div angucomplete-alt id="angu1"
-                    placeholder="Search Organisation Unit"
-                    maxlength="50"
-                    pause="100"
-                    selected-object="unitSelected"
-                    local-data="searchUnits"
-                    search-fields="name"
-                    title-field="name"
-                    minlength="1"
-                    input-class="form-control form-control-small"
-                    match-class="highlight">
-                  </div>
-
-
-                  <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
-                    <option value="">Filter search</option>
-                    <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
-                  </select>
+          <div angucomplete-alt id="angu1"
+            placeholder="Search Organisation Unit"
+            maxlength="50"
+            pause="100"
+            selected-object="unitSelected"
+            local-data="searchUnits"
+            search-fields="name"
+            title-field="name"
+            minlength="1"
+            input-class="form-control form-control-small"
+            match-class="highlight">
+          </div>
 
 
-                 </div>
-               </div>
-             </nav>
+          <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
+            <option value="">Filter search</option>
+            <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
+          </select>
+
+
+          </div>
+        </div>
+
+      </div> <!-- container fluid -->
+    </nav> <!-- navbar-default -->
 
            
               
-              <div id="map"></div>
+            <div id="map"></div>
 
 
            <!--    Edit a facility    -->
@@ -106,10 +108,9 @@
                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
            </script>
 
-      <!-- </div> container fluid-->
-</div>
+    </div><!-- map controller -->
 
 
 
-</body>
+  </body>
 </html>
