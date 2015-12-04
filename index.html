@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!--To ensure proper rendering and touch zooming for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta charset="UTF-8">
+    <title>Managing organization units - Lymap</title>
+    <link rel="manifest" href="manifest.webapp" />
+
+        <!-- Bootstrap CSS and Themes-->
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/bootstrap-theme.css"/>
+
+    <!-- Main styling CSS -->
+    <link rel="stylesheet" href="css/styles.css"/>
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio"></script>
+    <script type="text/javascript" src="js/markerclusterer.js"></script>
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/angular-resource.min.js"></script>
+    <script type="text/javascript" src="js/angular-animate.min.js"></script>
+    <script type="text/javascript" src="js/ui-bootstrap-tpls-0.14.3.min.js"></script>
+    <script type="text/javascript" src="js/angucompleter.js"></script>
+    <script type="text/javascript" src="js/functions.js"></script>
+
+</head>
+
+<body ng-app="lymap">
+  <div ng-controller="mapController" >
+ 
+     <!-- Navigation Bar - Eirik in progress-->
+       <div class="container-fluid">
+
+         <div class="navbar-header">
+           <a class="navbar-brand" href="https://wiki.uio.no/mn/ifi/inf5750/index.php/Lymap">
+            <p><b>Lymap Organisation units</b>.</p>
+          </a>
+        </div><!-- navbar-header -->
+
+             <div class="form-group">
+                <div class="input-group">
+
+                  <div angucomplete-alt id="angu1"
+                    placeholder="Search Organisation Unit"
+                    maxlength="50"
+                    pause="100"
+                    selected-object="unitSelected"
+                    local-data="searchUnits"
+                    search-fields="name"
+                    title-field="name"
+                    minlength="1"
+                    input-class="form-control form-control-small"
+                    match-class="highlight">
+                  </div>
+
+
+                  <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
+                    <option value="">Filter search</option>
+                    <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
+                  </select>
+
+
+                 </div>
+               </div>
+              
+              <div id="map"></div>
+
+
+           <!--    Edit a facility    -->
+
+           <script type="text/ng-template" id="editUnitContent.html">
+               <form role="form" ng-submit="updateUnit()">
+                    <input type="text" ng-model="editUnit.name" id="name" />
+                    <input type="text" ng-model="editUnit.shortName" id="shortName" />
+                    <input type="date" id="openingDate" datetime="MM/dd/YYYY" name="input" ng-model="editUnit.openingDate"
+                          placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
+                    <select name="eLevel"  ng-model="editUnit.level" ng-options="level.name for level in allLevels track by level.level">
+                    </select>
+                    <input type="submit" class="btn btn-primary" value="Save"/>
+                  </form>
+                  <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                </script>
+
+
+
+           <!--    Add a facility    -->
+
+            <script type="text/ng-template" id="addUnitContent.html">
+                  <form role="form" ng-submit="addUnit(addUnit)">
+                    <input type="text" ng-model="addUnit.nname" id="name" placeholder="Organisation name" />
+                    <input type="text" ng-model="addUnit.shortName" id="shortName" />
+                   <input type="date" id="openingDate" datetime="MM/dd/YYYY" name="input" ng-model="addUnit.openingDate"
+                          placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
+                    <input type="text" ng-model="addUnit.level" id="level" />
+                   <input type="submit" class="btn btn-primary" value="Save"/>
+               </form>
+               <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+           </script>
+
+      </div><!-- container fluid-->
+</div>
+
+
+
+</body>
+</html>
