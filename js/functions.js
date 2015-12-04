@@ -385,7 +385,11 @@
 
         // Controller for adding new facilities
         
+
         .controller('AddUnitController', function($scope, $uibModalInstance, marker,$http) {
+
+
+
 
             //$scope.addUnit = function() {
              //   $scope.addUnit.$update();
@@ -398,6 +402,11 @@
             //name,shortName, openingDate are mandatory, also make openingDate have to autofill with format YY-MM-DD
             //Traditional way of POSTING data
             //Fetch data from modal addUnit form
+
+
+            
+            
+
             $scope.addUnit = function(orgUnitData) {
 
                 var postData = {
@@ -424,6 +433,7 @@
                 console.log("openingDate="+orgUnitData.openingDate);
                 console.log("level="+orgUnitData.level);
 
+
                 var request = $http( {
                     method: "POST",
                     url: "http://localhost:8080/api/organisationUnits/",
@@ -441,10 +451,6 @@
                     alert("Create error");
                 });
             };
-
-
-
-
 
 
             //close modals if clicked somewhere or cancelled

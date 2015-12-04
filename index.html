@@ -33,41 +33,47 @@
   <div ng-controller="mapController" >
  
      <!-- Navigation Bar - Eirik in progress-->
-       <div class="container-fluid">
+     <nav class="navbar navbar-default">
 
+       <div class="container-fluid">
          <div class="navbar-header">
            <a class="navbar-brand" href="https://wiki.uio.no/mn/ifi/inf5750/index.php/Lymap">
-            <p><b>Lymap Organisation units</b>.</p>
+            <font size="6" color="#01A9DB">Lymap Organization Units</font>
           </a>
         </div><!-- navbar-header -->
 
-             <div class="form-group">
-                <div class="input-group">
+        <div class="form-group">
+         <div class="input-group">
 
-                  <div angucomplete-alt id="angu1"
-                    placeholder="Search Organisation Unit"
-                    maxlength="50"
-                    pause="100"
-                    selected-object="unitSelected"
-                    local-data="searchUnits"
-                    search-fields="name"
-                    title-field="name"
-                    minlength="1"
-                    input-class="form-control form-control-small"
-                    match-class="highlight">
-                  </div>
-
-
-                  <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
-                    <option value="">Filter search</option>
-                    <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
-                  </select>
+          <div angucomplete-alt id="angu1"
+            placeholder="Search for facility..."
+            maxlength="50"
+            pause="100"
+            selected-object="unitSelected"
+            local-data="searchUnits"
+            search-fields="name"
+            title-field="name"
+            minlength="1"
+            input-class="form-control form-control-small"
+            match-class="highlight">
+          </div>
 
 
-                 </div>
-               </div>
+          <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
+            <option value="">Filter search</option>
+            <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
+          </select>
+
+
+          </div>
+        </div>
+
+      </div> <!-- container fluid -->
+    </nav> <!-- navbar-default -->
+
+           
               
-              <div id="map"></div>
+            <div id="map"></div>
 
 
            <!--    Edit a facility    -->
@@ -95,16 +101,14 @@
                     <input type="text" ng-model="addUnit.shortName" id="shortName" />
                    <input type="date" id="openingDate" datetime="MM/dd/YYYY" name="input" ng-model="addUnit.openingDate"
                           placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
-                    <input type="text" ng-model="addUnit.level" id="level" />
                    <input type="submit" class="btn btn-primary" value="Save"/>
                </form>
                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
            </script>
 
-      </div><!-- container fluid-->
-</div>
+    </div><!-- map controller -->
 
 
 
-</body>
+  </body>
 </html>

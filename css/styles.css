@@ -1,3 +1,11 @@
+.navbar {
+    margin-bottom: 0px;
+}
+
+.navbar-default {
+    width: 100%;
+}
+
 .input-group {
     width: 400px;
     left: 70px;
@@ -6,6 +14,7 @@
     position: relative;
     float: left;
     border: 1px solid black;
+    border-right: #FFFFFF;
 }
 #angu1 {
     padding-top: 8px;
@@ -13,7 +22,7 @@
 #dropdownMenu1 {
     position: relative;
     padding: 8px;
-    left: 0.5px;
+    left: 0px;
 }
 
 
@@ -83,8 +92,13 @@
 
 
 .container-fluid {
+<<<<<<< HEAD
     width: 100%;
     height: 100%;
+=======
+	width: 100%;
+	height: 100%;
+>>>>>>> fd7a644b81a20bd054e21fef937c48f1683191d1
 }
 
 .form-control {
