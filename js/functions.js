@@ -447,15 +447,16 @@
                     for (var i = 0; i < levels.length; i++) {
                         $scope.allLevels.push(levels[i]);
                     }
+                    orgUnits.orgUnit().get({id: id}).$promise.then(function(result) {
+                        $scope.editUnit = result;
+                        $scope.editUnit.openingDate = new Date($scope.editUnit.openingDate);
+                        //TODO fix this part... apply current selected
+                        $scope.editUnit.level = $scope.allLevels[1];
+                    });
                 });
             });
 
-        orgUnits.orgUnit().get({id: id}).$promise.then(function(result) {
-            $scope.editUnit = result;
-            $scope.editUnit.openingDate = new Date($scope.editUnit.openingDate);
-            //TODO fix this part... apply current selected
-            $scope.editUnit.level = '4';
-        });
+
 
 
         $scope.cancel = function() {
