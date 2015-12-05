@@ -110,7 +110,7 @@
                             $scope.searchUnits = $scope.allUnits;
                         }
                     }
-                    //Modal
+                    //Modal editUnit
                     $scope.open = function(id) {
                         $uibModal.open({
                             animation: true,
@@ -124,8 +124,14 @@
                         });
                     };
 
+
+
+                    // Initialize the listener for the add facility functionality
+
                     google.maps.event.addListener($scope.map, "rightclick",function(event){
                         showContextMenu(event.latLng);
+                        
+
                     });
 
                     //TODO improve this part
@@ -176,6 +182,9 @@
                                     map: $scope.map,
                                     position: new google.maps.LatLng($scope.latlng[0], $scope.latlng[1])
                                 });
+
+
+                                // This will invoke a popup with form from the html script "addUnitContent.html" specified in index.html
 
                                 $uibModal.open({
                                     animation: true,
@@ -260,7 +269,7 @@
         
 
         /**************** Find Me button geolocation - Chak ongoing *******************/
-        $scope.currentLocation = "Current Location";
+/*        $scope.currentLocation = "Current Location";
         $scope.supportsGeo = $window.navigator;
         $scope.position = null;
         $scope.waitForPositionMessage = "";
@@ -290,106 +299,8 @@
                 $scope.waitForPositionMessage = "";
                 alert(error);
             });
-        };
-        /**************************************************************************/
-
-        
-
-
-        /************************ Add Facility etc: Hichael ongoing ****************/
-        $scope.output = "Waiting";
-        $scope.name = "Hichael";
-        $scope.ready = false;
-        $scope.orgName = "Default";
-        $scope.formInput;
-        $scope.submitFinished = false;
-
-
-        $scope.invokeForm = function() {
-
-        }
-
-        $scope.submitForm = function() {
-
-            if($scope.ready === true) {
-            $scope.orgName = $scope.formInput;
-            $scope.submitFinished = true;
-            } else {
-
-                alert('No input in textfield!');
-            }
-
-        }
-
-
-        var initializeListener = function() {
-
-          
-            google.maps.event.addListener($scope.map, 'click', function(event) {
-
-            if($scope.ready === true && $scope.submitFinished === true) {
-
-
-                //Get the coordinates 
-
-            coords = event.latLng;
-
-
-             $scope.lats = coords.lat();
-             $scope.longs = coords.lng();
-
-
-            //Create marker
-                m = new google.maps.Marker({
-                map: $scope.map,
-                position: new google.maps.LatLng($scope.lats,$scope.longs),
-                title: $scope.orgName
-            });
-
-                //click event with info window
-            google.maps.event.addListener(m, 'click', function(){
-                $scope.infoWindow.setContent('<h2>' + this.title + '</h2>' + this.content);
-                $scope.infoWindow.open($scope.map, this);
-            });
-
-            //InfoWIndow Content
-            m.content = '<div class="infoWindowContent">' + $scope.orgName + '</div>';
-         
-            $scope.markers.push(m);
-                    
-            console.log("Finished creating markers");
-
-            $scope.ready = false;
-            $scope.submitFinished = false;
-            $scope.output = "Waiting";
-
-              $scope.$watch($scope.map, function() {
-            alert('Added the organisation ' + $scope.orgName + ' to the system.');
-            });
-
-
-            $scope.$apply();
-
-
-            } 
-
-
-            });
-
-        };
-
-
-
-        initializeListener();
-
-        // Add a new facility
-        $scope.addFacility = function() {
-         
-            $scope.output = "Adding facility...";
-            $scope.ready = true;
-        }
-        /*************************************************************************/
-
+        };  */
+      
 
         /************************ get levels Eirik ****************/
 
@@ -428,6 +339,10 @@
             }
 
     })
+
+
+        // Controller for editing existing facilities
+    
         .controller('EditUnitController', function($scope, $uibModalInstance, id, orgUnits, $q) {
             $scope.updateUnit = function() {
                 $scope.editUnit.$update();
@@ -456,19 +371,99 @@
                 });
             });
 
+        orgUnits.orgUnit().get({id: id}).$promise.then(function(result) {
+            $scope.editUnit = result;
+            $scope.editUnit.openingDate = new Date($scope.editUnit.openingDate);
+            //TODO fix this part... apply current selected
 
+            $scope.editUnit.level = '4';
+
+        });
 
 
         $scope.cancel = function() {
             $uibModalInstance.dismiss('cancel');
         }
     })
-        .controller('AddUnitController', function($scope, $uibModalInstance, marker) {
+
+
+
+
+        // Controller for adding new facilities
+        
+
+        .controller('AddUnitController', function($scope, $uibModalInstance, marker,$http) {
+
+
+
+
+            //$scope.addUnit = function() {
+             //   $scope.addUnit.$update();
+            //    $uibModalInstance.dismiss('cancel');
+            //};
+
+
+
+            //TODO: Fix references to different parent levels.
+            //name,shortName, openingDate are mandatory, also make openingDate have to autofill with format YY-MM-DD
+            //Traditional way of POSTING data
+            //Fetch data from modal addUnit form
+
+
+            
+            
+
+            $scope.addUnit = function(orgUnitData) {
+
+                var postData = {
+                    "name" : orgUnitData.nname,
+                    "shortName" : orgUnitData.shortName,
+                    "level" : "4",
+                    "parent": {"id":"YuQRtpLP10I", "name": "Badjia"},
+                    //"description" : orgUnitData.ddescription,
+                    //"code" : orgUnitData.ccode,
+                    "openingDate" : "2015-12-04",
+                    //"comment" : orgUnitData.comment,
+                    "coordinates" : "[" + "41.40338"+ "," + "2.17403" + "]", 
+                    //"longitude" : orgUnitData.longitude,
+                   //"latitude" : orgUnitData.latitude,
+                    //"url" : orgUnitData.url,
+                    //"contactPerson" : orgUnitData.contactPerson,
+                    //"address" : orgUnitData.address,
+                    //"email" : orgUnitData.email,
+                    //"phoneNumber" : orgUnitData.phoneNumber
+                };
+
+                console.log("name="+orgUnitData.nname);
+                console.log("shortName="+orgUnitData.shortName);
+                console.log("openingDate="+orgUnitData.openingDate);
+                console.log("level="+orgUnitData.level);
+
+
+                var request = $http( {
+                    method: "POST",
+                    url: "http://localhost:8080/api/organisationUnits/",
+                    data: postData,
+                    headers: {
+                        'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                request.success(function(data) {
+                    alert("Create success");
+                    $scope.orgUnitData = undefined;
+                }).error(function(data, status) {
+                    alert("Create error");
+                });
+            };
+
 
             //close modals if clicked somewhere or cancelled
             $uibModalInstance.result.then(function(){}, function() {
                 marker.setMap(null);
             });
+
             $scope.cancel = function() {
                 $uibModalInstance.dismiss('cancel');
                 marker.setMap(null);
