@@ -45,7 +45,7 @@
 
         //Set map options
         $scope.mapOptions = {
-            zoom: 2,
+            zoom: 8,
             center: new google.maps.LatLng(9.0131, -12.9487),
             mapTypeId: google.maps.MapTypeId.TERRAIN
         };
@@ -55,7 +55,15 @@
         $scope.markers = [];
 
         $scope.infoWindow = new google.maps.InfoWindow();
-        $scope.createMarker = function (info) {
+        $scope.createMarker = function (info, flag) {
+
+            if ($scope.marker && flag == false) {
+                $scope.marker.setMap(null);
+            }
+
+            if ($scope.polygon && flag == false) {
+                $scope.polygon.setMap(null);
+            }
             //Get the coordinates and create an array
             $scope.coords = info.coordinates.replace(/[^0-9\-.,]+/g,"").split(',');
 
@@ -70,7 +78,7 @@
 
             var string = '<div class="infoWindowContent">' +
                 '<p> Opening Date: ' + info.openingDate + '</p>' +
-                '<p> Level: ' + info.level + '</p>' +
+                '<p> Level: ' + info.levelName + '</p>' +
                 '<p> Display name: ' + info.displayName + '</p>' +
                 '<p> Short name: ' + info.shortName + '</p>' +
                 '<div class="infoWindowContent"><button type="button" class="btn btn-default" ng-click="open(' + id + ')">Edit</button>' +
@@ -78,16 +86,96 @@
 
             var $btn = $compile(string)($scope);
 
-
             //click event with info window
-            google.maps.event.addListener($scope.marker, 'click', function(){
-                $scope.infoWindow.setContent($btn[0]);
-                $scope.infoWindow.open($scope.map, this);
-            });
+            if (flag)
+            {
+                google.maps.event.addListener($scope.marker, 'click', function(){
+                    $scope.infoWindow.setContent($btn[0]);
+                    $scope.infoWindow.open($scope.map, this);
+                });
 
-            $scope.markers.push($scope.marker);
+                $scope.markers.push($scope.marker);
+            }
+            else
+            {
+                $scope.infoWindow.setContent($btn[0]);
+                $scope.infoWindow.open($scope.map, $scope.marker);
+
+                $scope.map.setZoom(14);
+                $scope.map.setCenter($scope.marker.getPosition());
+            }
+
+
+
         };
 
+            $scope.polygons = [];
+
+            $scope.createPolygon = function(info, flag) {
+
+                $scope.newPolName = name;
+
+                if ($scope.polygon && flag == false) {
+                    $scope.polygon.setMap(null);
+                }
+
+                if ($scope.marker) {
+                    $scope.marker.setMap(null);
+                }
+
+
+                //console.log(info.coordinates);
+                $scope.coordInfo = [];
+                $scope.bounds = new google.maps.LatLngBounds();
+                //Get the coordinates and create an array
+                $scope.coords = info.coordinates.replace(/[^0-9\-.,]+/g,"").split(',');
+                for (var i = 0; i < $scope.coords.length; i++) {
+                    if ( i % 2 == 0) {
+                        $scope.coordInfo.push({lat: parseFloat($scope.coords[i + 1]), lng: parseFloat($scope.coords[i])});
+                    }
+                }
+
+                var id = "'" + info.id + "'";
+
+                var string = '<div class="infoWindowContent">' +
+                    '<p> Opening Date: ' + info.openingDate + '</p>' +
+                    '<p> Level: ' + info.levelName + '</p>' +
+                    '<p> Display name: ' + info.displayName + '</p>' +
+                    '<p> Short name: ' + info.shortName + '</p>' +
+                    '<div class="infoWindowContent"><button type="button" class="btn btn-default" ng-click="open(' + id + ')">Edit</button>' +
+                    '</div>';
+
+                var $btn = $compile(string)($scope);
+                //console.log($scope.coordInfo);
+                $scope.polygon = new google.maps.Polygon({
+                    paths: $scope.coordInfo,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35
+                });
+
+                //for (var x = 0; x < $scope.coordInfo.length; x++) {
+                //    $scope.bounds.extend($scope.coordInfo[x]);
+                //}
+                //console.log(polygon);
+                $scope.polygon.setMap($scope.map);
+                $scope.polygon['level_name'] = info.levelName;
+
+                $scope.map.setZoom(8);
+                $scope.map.setCenter({lat: $scope.coordInfo[0].lat, lng: $scope.coordInfo[0].lng});
+
+                $scope.polygon.addListener('click', function(e) {
+                    $scope.infoWindow.setContent($btn[0]);
+                    $scope.infoWindow.setPosition(e.latLng);
+                    $scope.infoWindow.open($scope.map);
+                });
+
+                if (flag) {
+                    $scope.polygons.push($scope.polygon);
+                }
+            };
 
 
 
@@ -102,14 +190,124 @@
                 $scope.allUnits = [];
                     //Wait until the data is fetched from the db
                 $q.all($scope.orgUnitId).then(function(units) {
-                    for (var x = 0; x < units.length; x++) {
-                        if (!angular.isUndefined(units[x].coordinates) && units[x].featureType === 'POINT') {
-                            //create new Array with OrganisationUnits with present coordinates
-                            $scope.createMarker(units[x]);
-                            $scope.allUnits.push(units[x]);
-                            $scope.searchUnits = $scope.allUnits;
+
+                    //TODO reusable part
+                    $scope.Levels = orgUnits.getLevels(function(data) {
+                        $scope.levels = [];
+
+                        for (var i = 0; i < data.organisationUnitLevels.length; i++) {
+                            //Iterate and get each unit one by one, put into levelNames array
+                            //$scope.levelNames.push($scope.levels.organisationUnitLevels[i]);
+                            $scope.levels.push(orgUnits.getLevel().get({id: data.organisationUnitLevels[i].id}).$promise);
                         }
-                    }
+
+                        $scope.allLevels = [];
+                        $q.all($scope.levels).then(function(levels) {
+                            for (var i = 0; i < levels.length; i++) {
+                                $scope.allLevels.push(levels[i]);
+                            }
+
+                            for (var x = 0; x < units.length; x++) {
+                                if (!angular.isUndefined(units[x].coordinates) && units[x].featureType !== 'NONE')
+                                {
+                                    for (var i = 0; i < $scope.allLevels.length; i ++) {
+
+                                        if ($scope.allLevels[i].level === units[x].level) {
+                                            units[x]['levelName'] = $scope.allLevels[i].name;
+                                        }
+                                    }
+                                    $scope.allUnits.push(units[x]);
+                                    $scope.searchUnits = $scope.allUnits;
+                                }
+                            }
+
+                            $scope.unitSelected = function(selected) {
+                                if (selected) {
+                                    for (var i = 0; i < $scope.allUnits.length; i++) {
+                                        if ($scope.allUnits[i].name === selected.title) {
+                                            if ($scope.allUnits[i].featureType === 'POINT') {
+
+                                                $scope.createMarker($scope.allUnits[i], false);
+                                            }
+                                            else if ($scope.allUnits[i].featureType === 'POLYGON' || $scope.allUnits[i].featureType === 'MULTI_POLYGON') {
+                                                $scope.createPolygon($scope.allUnits[i], false);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            $scope.allFacilities = function() {
+                                $scope.clicked = !$scope.clicked;
+                                if ($scope.clicked) {
+                                    if (!$scope.mc){
+                                        for (var i = 0; i < $scope.allUnits.length; i++) {
+                                            if ($scope.allUnits[i].levelName === 'Facility') {
+                                                $scope.createMarker($scope.allUnits[i], true);
+                                            }
+                                        }
+                                        $scope.map.setCenter({ lat: 9.0131, lng:  -12.9487 });
+                                        $scope.map.setZoom(8);
+
+                                        $scope.mc = new MarkerClusterer($scope.map, $scope.markers, {
+                                            maxZoom: 14
+                                        });
+                                    }
+                                    else {
+                                        $scope.mc.addMarkers($scope.markers);
+                                    }
+                                }
+                                else {
+                                    if ($scope.markers.length > 0) {
+                                        $scope.mc.removeMarkers($scope.markers);
+                                    }
+                                }
+                            }
+
+                            $scope.allChiefdoms = function() {
+                                $scope.cclicked = !$scope.cclicked;
+                                if ($scope.cclicked) {
+                                    for (var i = 0; i < $scope.allUnits.length; i++) {
+                                        if ($scope.allUnits[i].levelName === 'Chiefdom') {
+                                            $scope.createPolygon($scope.allUnits[i], true, 'Chiefdom');
+                                        }
+                                    }
+                                    $scope.polName = 'Chiefdom';
+                                }
+                                else
+                                {
+                                    for (var i = 0; i < $scope.polygons.length; i ++) {
+                                        if ($scope.polygons[i].level_name === 'Chiefdom')
+                                            $scope.polygons[i].setMap(null);
+                                    }
+                                    $scope.polygon.length = 0;
+                                }
+                            }
+
+                            $scope.allDistricts = function() {
+                                $scope.dclicked = !$scope.dclicked;
+                                if ($scope.dclicked) {
+                                    for (var i = 0; i < $scope.allUnits.length; i++) {
+                                        if ($scope.allUnits[i].levelName === 'District') {
+                                            $scope.createPolygon($scope.allUnits[i], true);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    for (var i = 0; i < $scope.polygons.length; i ++) {
+                                        if ($scope.polygons[i].level_name === 'District')
+                                            $scope.polygons[i].setMap(null);
+                                    }
+                                    $scope.polygon.length = 0;
+
+                                }
+
+                            }
+                        });
+                    });
+
+
                     //Modal editUnit
                     $scope.open = function(id) {
                         $uibModal.open({
@@ -241,9 +439,9 @@
 
 
                     //Create Clusters
-                    $scope.mc = new MarkerClusterer($scope.map, $scope.markers, {
-                        maxZoom: 18
-                    });
+                    //$scope.mc = new MarkerClusterer($scope.map, $scope.markers, {
+                    //    maxZoom: 18
+                    //});
                     //var loader = document.getElementById('loader'),
                     //    map_wrapper = document.getElementById('map-wrapper');
                     //loader.className = "hide";
@@ -251,16 +449,7 @@
                     google.maps.event.trigger($scope.map, "resize");
 
                     //autocompleter select unit and zoom/openInfoWindow
-                    $scope.unitSelected = function(selected) {
-                        if (selected) {
-                            for (var i = 0; i < $scope.markers.length; i++) {
-                                if ($scope.markers[i].title === selected.title) {
-                                    google.maps.event.trigger($scope.markers[i], 'click');
-                                    $scope.map.setZoom(15);
-                                }
-                            }
-                        }
-                    }
+
                 })
         });
 
@@ -300,27 +489,7 @@
                 alert(error);
             });
         };  */
-      
 
-        /************************ get levels Eirik ****************/
-
-        //TODO reusable part
-        $scope.Levels = orgUnits.getLevels(function(data) {
-            $scope.levels = [];
-            
-            for (var i = 0; i < data.organisationUnitLevels.length; i++) {
-                //Iterate and get each unit one by one, put into levelNames array
-                //$scope.levelNames.push($scope.levels.organisationUnitLevels[i]);
-                $scope.levels.push(orgUnits.getLevel().get({id: data.organisationUnitLevels[i].id}).$promise);
-            }
-
-            $scope.allLevels = [];
-            $q.all($scope.levels).then(function(levels) {
-                for (var i = 0; i < levels.length; i++) {
-                    $scope.allLevels.push(levels[i]);
-                }
-            });
-        });
 
             // Filter
             $scope.changeFilter = function (dataLevels) {
@@ -350,34 +519,30 @@
             };
 
             //TODO reusable part
-            $scope.Levels = orgUnits.getLevels(function(data) {
-                $scope.levels = [];
-
-                for (var i = 0; i < data.organisationUnitLevels.length; i++) {
-                    $scope.levels.push(orgUnits.getLevel().get({id: data.organisationUnitLevels[i].id}).$promise);
-                }
-
-                $scope.allLevels = [];
-                $q.all($scope.levels).then(function(levels) {
-                    for (var i = 0; i < levels.length; i++) {
-                        $scope.allLevels.push(levels[i]);
-                    }
-                    orgUnits.orgUnit().get({id: id}).$promise.then(function(result) {
-                        $scope.editUnit = result;
-                        $scope.editUnit.openingDate = new Date($scope.editUnit.openingDate);
-                        //TODO fix this part... apply current selected
-                        $scope.editUnit.level = $scope.allLevels[1];
-                    });
-                });
-            });
+            //$scope.Levels = orgUnits.getLevels(function(data) {
+            //    $scope.levels = [];
+            //
+            //    for (var i = 0; i < data.organisationUnitLevels.length; i++) {
+            //        $scope.levels.push(orgUnits.getLevel().get({id: data.organisationUnitLevels[i].id}).$promise);
+            //    }
+            //
+            //    $scope.allLevels = [];
+            //    $q.all($scope.levels).then(function(levels) {
+            //        for (var i = 0; i < levels.length; i++) {
+            //            $scope.allLevels.push(levels[i]);
+            //        }
+            //        orgUnits.orgUnit().get({id: id}).$promise.then(function(result) {
+            //            $scope.editUnit = result;
+            //            $scope.editUnit.openingDate = new Date($scope.editUnit.openingDate);
+            //            //TODO fix this part... apply current selected
+            //            $scope.editUnit.level = $scope.allLevels[1];
+            //        });
+            //    });
+            //});
 
         orgUnits.orgUnit().get({id: id}).$promise.then(function(result) {
             $scope.editUnit = result;
             $scope.editUnit.openingDate = new Date($scope.editUnit.openingDate);
-            //TODO fix this part... apply current selected
-
-            $scope.editUnit.level = '4';
-
         });
 
 
@@ -392,9 +557,15 @@
         // Controller for adding new facilities
         
 
-        .controller('AddUnitController', function($scope, $uibModalInstance, marker,$http) {
+        .controller('AddUnitController', function($scope, $uibModalInstance, marker, orgUnits) {
 
-
+            $scope.addUnit = function() {
+                //$scope.addU = new orgUnits();
+                //$scope.addU.orgUnit.$save(function() {
+                //
+                //});
+                $uibModalInstance.dismiss('cancel');
+            };
 
 
             //$scope.addUnit = function() {
@@ -413,50 +584,50 @@
             
             
 
-            $scope.addUnit = function(orgUnitData) {
-
-                var postData = {
-                    "name" : orgUnitData.nname,
-                    "shortName" : orgUnitData.shortName,
-                    "level" : "4",
-                    "parent": {"id":"YuQRtpLP10I", "name": "Badjia"},
-                    //"description" : orgUnitData.ddescription,
-                    //"code" : orgUnitData.ccode,
-                    "openingDate" : "2015-12-04",
-                    //"comment" : orgUnitData.comment,
-                    "coordinates" : "[" + "41.40338"+ "," + "2.17403" + "]", 
-                    //"longitude" : orgUnitData.longitude,
-                   //"latitude" : orgUnitData.latitude,
-                    //"url" : orgUnitData.url,
-                    //"contactPerson" : orgUnitData.contactPerson,
-                    //"address" : orgUnitData.address,
-                    //"email" : orgUnitData.email,
-                    //"phoneNumber" : orgUnitData.phoneNumber
-                };
-
-                console.log("name="+orgUnitData.nname);
-                console.log("shortName="+orgUnitData.shortName);
-                console.log("openingDate="+orgUnitData.openingDate);
-                console.log("level="+orgUnitData.level);
-
-
-                var request = $http( {
-                    method: "POST",
-                    url: "http://localhost:8080/api/organisationUnits/",
-                    data: postData,
-                    headers: {
-                        'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
-                        'Content-Type': 'application/json'
-                    },
-                });
-
-                request.success(function(data) {
-                    alert("Create success");
-                    $scope.orgUnitData = undefined;
-                }).error(function(data, status) {
-                    alert("Create error");
-                });
-            };
+            //$scope.addUnit = function(orgUnitData) {
+            //
+            //    var postData = {
+            //        "name" : orgUnitData.nname,
+            //        "shortName" : orgUnitData.shortName,
+            //        "level" : "4",
+            //        "parent": {"id":"YuQRtpLP10I", "name": "Badjia"},
+            //        //"description" : orgUnitData.ddescription,
+            //        //"code" : orgUnitData.ccode,
+            //        "openingDate" : "2015-12-04",
+            //        //"comment" : orgUnitData.comment,
+            //        "coordinates" : "[" + "41.40338"+ "," + "2.17403" + "]",
+            //        //"longitude" : orgUnitData.longitude,
+            //       //"latitude" : orgUnitData.latitude,
+            //        //"url" : orgUnitData.url,
+            //        //"contactPerson" : orgUnitData.contactPerson,
+            //        //"address" : orgUnitData.address,
+            //        //"email" : orgUnitData.email,
+            //        //"phoneNumber" : orgUnitData.phoneNumber
+            //    };
+            //
+            //    console.log("name="+orgUnitData.nname);
+            //    console.log("shortName="+orgUnitData.shortName);
+            //    console.log("openingDate="+orgUnitData.openingDate);
+            //    console.log("level="+orgUnitData.level);
+            //
+            //
+            //    var request = $http( {
+            //        method: "POST",
+            //        url: "http://localhost:8080/api/organisationUnits/",
+            //        data: postData,
+            //        headers: {
+            //            'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
+            //            'Content-Type': 'application/json'
+            //        },
+            //    });
+            //
+            //    request.success(function(data) {
+            //        alert("Create success");
+            //        $scope.orgUnitData = undefined;
+            //    }).error(function(data, status) {
+            //        alert("Create error");
+            //    });
+            //};
 
 
             //close modals if clicked somewhere or cancelled
@@ -468,5 +639,6 @@
                 $uibModalInstance.dismiss('cancel');
                 marker.setMap(null);
             }
-        });
+        })
+    ;
 })();

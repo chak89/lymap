@@ -16,22 +16,29 @@
     border: 1px solid black;
     border-right: #FFFFFF;
 }
-#angu1 {
-    padding-top: 8px;
-}
+
 #dropdownMenu1 {
-    position: relative;
+    position: absolute;
+    top: 0;
+    right: 0;
     padding: 8px;
-    left: 0px;
 }
 
+.search {
+    position: relative;
+    height: 83.3%;
+}
+
+
+.angucomplete-holder {
+    position: relative;
+}
 
 .angucomplete-dropdown {
     border-color: #ececec;
     border-width: 1px;
     border-style: solid;
     border-radius: 2px;
-    width: 250px;
     padding: 6px;
     cursor: pointer;
     z-index: 9999;
@@ -49,7 +56,9 @@
 }
 
 .angucomplete-description {
-    font-size: 14px;
+    font-size: 10px;
+    color: #adadad;
+    text-align: right;
 }
 
 .angucomplete-row {
@@ -92,13 +101,8 @@
 
 
 .container-fluid {
-<<<<<<< HEAD
     width: 100%;
     height: 100%;
-=======
-	width: 100%;
-	height: 100%;
->>>>>>> fd7a644b81a20bd054e21fef937c48f1683191d1
 }
 
 .form-control {
@@ -327,20 +331,15 @@ form input.ng-invalid-autocomplete-required {
 }
 
 
-#ex1_dropdown {
-    overflow-y: auto;
-    max-height: 150px;
+html, body {
+    position: relative;
+    height: 100%;
 }
 
 
-.map-container {
-    max-width: 95%;
-    display: block;
-    margin: 0 auto;
-}
 
 #map {
-    height:620px;
+    height:100%;
     width:100%;
 }
 .infoWindowContent {
@@ -352,10 +351,6 @@ form input.ng-invalid-autocomplete-required {
 }
 .title h1 {
     text-align :center;
-}
-
-.angucomplete-dropdown {
-    margin-top: 36px;
 }
 
 /*
@@ -464,6 +459,71 @@ form input.ng-invalid-autocomplete-required {
     -o-transition: all 0.25s;
     transition: all 0.25s;
     cursor: pointer;
+}
+
+.all-container {
+    width:100%;
+    height: 100%;
+}
+
+.search-container {
+    float:left;
+    position: relative;
+    width: 260px;
+    height: 100%;
+}
+
+.map-container {
+    margin-left: 260px;
+    height: 100%;
+}
+
+.search-list-container {
+    height: 100%;
+}
+
+.angucomplete-holder {
+    height: 100%;
+    width: 100%;
+}
+
+#angu1_dropdown {
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+.title {
+    font-size: 36px;
+    text-align :center;
+    margin: 24px 0;
+}
+
+.title span {
+    font-size: 14px;
+    color: #888888;
+}
+
+.map-container {
+    position: relative;
+}
+.show-buttons {
+    position: absolute;
+    top: 53px;
+    left: 11px;
+    z-index: 99999;
+}
+
+.clicked {
+    font-weight: bold;
+}
+
+.show-buttons button {
+    display: block;
+    border: none;
+    margin-top: 6px;
+    width: 80px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px;
 }
 
 

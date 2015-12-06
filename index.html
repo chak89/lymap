@@ -30,50 +30,44 @@
 </head>
 
 <body ng-app="lymap">
-  <div ng-controller="mapController" >
+  <div ng-controller="mapController" class="all-container">
  
      <!-- Navigation Bar - Eirik in progress-->
-     <nav class="navbar navbar-default">
-
-       <div class="container-fluid">
-         <div class="navbar-header">
-           <a class="navbar-brand" href="https://wiki.uio.no/mn/ifi/inf5750/index.php/Lymap">
-            <font size="6" color="#01A9DB">Lymap Organization Units</font>
-          </a>
-        </div><!-- navbar-header -->
-
-        <div class="form-group">
-         <div class="input-group">
-
-          <div angucomplete-alt id="angu1"
-            placeholder="Search for facility..."
-            maxlength="50"
-            pause="100"
-            selected-object="unitSelected"
-            local-data="searchUnits"
-            search-fields="name"
-            title-field="name"
-            minlength="1"
-            input-class="form-control form-control-small"
-            match-class="highlight">
+      <div class="search-container">
+          <div class="title">
+              Lymap <span>/ Sierra Leone</span>
           </div>
-
-
-          <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
-            <option value="">Filter search</option>
-            <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
-          </select>
-
-
+          <div class="search">
+               <div angucomplete-alt id="angu1" class="search-list-container"
+                    placeholder="Search for facility..."
+                    maxlength="50"
+                    pause="100"
+                    selected-object="unitSelected"
+                    local-data="searchUnits"
+                    search-fields="name"
+                    title-field="name"
+                    level-name="levelName"
+                    minlength="0"
+                    input-class="form-control form-control-small"
+                    match-class="highlight">
+               </div>
+              <!--  TODO move select in angucompleter -->
+               <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
+                   <option value="">Filter</option>
+                   <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
+               </select>
           </div>
-        </div>
-
-      </div> <!-- container fluid -->
-    </nav> <!-- navbar-default -->
-
-           
-              
+      </div>
+      <!-- container fluid -->
+      <div class="map-container">
+          <div class="show-buttons">
+              <span>Show all:</span>
+              <button ng-class="{clicked: clicked == true}" type="button" ng-click="allFacilities()">Facilities</button>
+              <button ng-class="{clicked: cclicked == true}" type="button" ng-click="allChiefdoms()">Chiefdoms</button>
+              <button ng-class="{clicked: dclicked == true}" type="button" ng-click="allDistricts()">Districts</button>
+          </div>
             <div id="map"></div>
+      </div>
 
 
            <!--    Edit a facility    -->
@@ -84,8 +78,8 @@
                     <input type="text" ng-model="editUnit.shortName" id="shortName" />
                     <input type="date" id="openingDate" datetime="MM/dd/YYYY" name="input" ng-model="editUnit.openingDate"
                           placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
-                    <select name="eLevel"  ng-model="editUnit.level" ng-options="level.name for level in allLevels track by level.level">
-                    </select>
+                    <!--<select name="eLevel"  ng-model="editUnit.level" ng-options="level.name for level in allLevels track by level.level">-->
+                    <!--</select>-->
                     <input type="submit" class="btn btn-primary" value="Save"/>
                   </form>
                   <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
@@ -96,10 +90,10 @@
            <!--    Add a facility    -->
 
             <script type="text/ng-template" id="addUnitContent.html">
-                  <form role="form" ng-submit="addUnit(addUnit)">
-                    <input type="text" ng-model="addUnit.nname" id="name" placeholder="Organisation name" />
-                    <input type="text" ng-model="addUnit.shortName" id="shortName" />
-                   <input type="date" id="openingDate" datetime="MM/dd/YYYY" name="input" ng-model="addUnit.openingDate"
+                  <form role="form" ng-submit="addUnit()">
+                    <input type="text" ng-model="addUnit.nname" placeholder="Organisation name" />
+                    <input type="text" ng-model="addUnit.shortName" />
+                   <input type="date"  datetime="MM/dd/YYYY" name="input" ng-model="addUnit.openingDate"
                           placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
                    <input type="submit" class="btn btn-primary" value="Save"/>
                </form>

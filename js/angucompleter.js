@@ -46,7 +46,7 @@
         // Set the default template for this directive
         $templateCache.put(TEMPLATE_URL,
             '<div class="angucomplete-holder" ng-class="{\'angucomplete-dropdown-visible\': showDropdown}">' +
-            '  <input id="{{id}}_value" name="{{inputName}}" ng-class="{\'angucomplete-input-not-empty\': notEmpty}" ng-model="searchStr" ng-disabled="disableInput" type="{{inputType}}" placeholder="{{placeholder}}" maxlength="{{maxlength}}" ng-focus="onFocusHandler()" class="{{inputClass}}" ng-focus="resetHideResults()" ng-blur="hideResults($event)" autocapitalize="off" autocorrect="off" autocomplete="off" ng-change="inputChangeHandler(searchStr)"/>' +
+            '  <input id="{{id}}_value" name="{{inputName}}" ng-class="{\'angucomplete-input-not-empty\': notEmpty}" ng-model="searchStr" ng-disabled="disableInput" type="{{inputType}}" placeholder="{{placeholder}}" maxlength="{{maxlength}}" ng-focus="onFocusHandler()" class="{{inputClass}}" ng-focus="resetHideResults()" autocapitalize="off" autocorrect="off" autocomplete="off" ng-change="inputChangeHandler(searchStr)"/>' +
             '  <div id="{{id}}_dropdown" class="angucomplete-dropdown" ng-show="showDropdown">' +
             '    <div class="angucomplete-searching" ng-show="searching" ng-bind="textSearching"></div>' +
             '    <div class="angucomplete-searching" ng-show="!searching && (!results || results.length == 0)" ng-bind="textNoResults"></div>' +
@@ -57,11 +57,12 @@
             '      </div>' +
             '      <div class="angucomplete-title" ng-if="matchClass" ng-bind-html="result.title"></div>' +
             '      <div class="angucomplete-title" ng-if="!matchClass">{{ result.title }}</div>' +
-            '      <div ng-if="matchClass && result.description && result.description != \'\'" class="angucomplete-description" ng-bind-html="result.description"></div>' +
-            '      <div ng-if="!matchClass && result.description && result.description != \'\'" class="angucomplete-description">{{result.description}}</div>' +
+            '      <div ng-if="matchClass && result.levelName && result.levelName != \'\'" class="angucomplete-description" ng-bind-html="result.levelName"></div>' +
+            '      <div ng-if="!matchClass && result.levelName && result.levelName != \'\'" class="angucomplete-description">{{result.levelName}}</div>' +
             '    </div>' +
             '  </div>' +
             '</div>'
+
         );
 
         function link(scope, elem, attrs, ctrl) {
@@ -129,6 +130,14 @@
             scope.$on('angucomplete-alt:changeInput', function (event, elementId, newval) {
                 if (!!elementId && elementId === scope.id) {
                     handleInputChange(newval);
+                }
+            });
+
+            scope.$watch('localData', function() {
+                if (scope.localData) {
+                    scope.showDropdown = true;
+                    showAll();
+
                 }
             });
 
@@ -564,7 +573,8 @@
             }
 
             function processResults(responseData, str) {
-                var i, description, image, text, formattedText, formattedDesc;
+
+                var i, level, image, text, formattedText, formattedLevel;
 
                 if (responseData && responseData.length > 0) {
                     scope.results = [];
@@ -574,9 +584,9 @@
                             text = formattedText = extractTitle(responseData[i]);
                         }
 
-                        description = '';
-                        if (scope.descriptionField) {
-                            description = formattedDesc = extractValue(responseData[i], scope.descriptionField);
+                        level = '';
+                        if (scope.levelName) {
+                            level = formattedLevel = extractValue(responseData[i], scope.levelName);
                         }
 
                         image = '';
@@ -586,12 +596,12 @@
 
                         if (scope.matchClass) {
                             formattedText = findMatchString(text, str);
-                            formattedDesc = findMatchString(description, str);
+                            formattedLevel = findMatchString(level, str);
                         }
 
                         scope.results[scope.results.length] = {
                             title: formattedText,
-                            description: formattedDesc,
+                            levelName: formattedLevel,
                             image: image,
                             originalObject: responseData[i]
                         };
@@ -603,7 +613,7 @@
 
                 if (scope.autoMatch && scope.results.length === 1 &&
                     checkExactMatch(scope.results[0],
-                        {title: text, desc: description || ''}, scope.searchStr)) {
+                        {title: text, levelName: level || ''}, scope.searchStr)) {
                     scope.showDropdown = false;
                 } else if (scope.results.length === 0 && !displayNoResults) {
                     scope.showDropdown = false;
@@ -614,6 +624,7 @@
 
             function showAll() {
                 if (scope.localData) {
+
                     processResults(scope.localData, '');
                 }
                 else if (scope.remoteApiHandler) {
@@ -678,7 +689,7 @@
                 // Restore original values
                 if (scope.matchClass) {
                     result.title = extractTitle(result.originalObject);
-                    result.description = extractValue(result.originalObject, scope.descriptionField);
+                    result.levelName = extractValue(result.originalObject, scope.levelName);
                 }
 
                 if (scope.clearSelected) {
@@ -787,7 +798,7 @@
                 remoteUrl: '@',
                 remoteUrlDataField: '@',
                 titleField: '@',
-                descriptionField: '@',
+                levelName: '@',
                 imageField: '@',
                 inputClass: '@',
                 pause: '@',
