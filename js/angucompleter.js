@@ -22,7 +22,7 @@
     }
 }(window, function (angular) {
 
-    angular.module('angucomplete-alt', []).directive('angucompleteAlt', ['$q', '$parse', '$http', '$sce', '$timeout', '$templateCache', '$interpolate', function ($q, $parse, $http, $sce, $timeout, $templateCache, $interpolate) {
+    angular.module('angucomplete-alt', ['perfect_scrollbar']).directive('angucompleteAlt', ['$q', '$parse', '$http', '$sce', '$timeout', '$templateCache', '$interpolate', function ($q, $parse, $http, $sce, $timeout, $templateCache, $interpolate) {
         // keyboard events
         var KEY_DW  = 40;
         var KEY_RT  = 39;
@@ -47,7 +47,7 @@
         $templateCache.put(TEMPLATE_URL,
             '<div class="angucomplete-holder" ng-class="{\'angucomplete-dropdown-visible\': showDropdown}">' +
             '  <input id="{{id}}_value" name="{{inputName}}" ng-class="{\'angucomplete-input-not-empty\': notEmpty}" ng-model="searchStr" ng-disabled="disableInput" type="{{inputType}}" placeholder="{{placeholder}}" maxlength="{{maxlength}}" ng-focus="onFocusHandler()" class="{{inputClass}}" ng-focus="resetHideResults()" autocapitalize="off" autocorrect="off" autocomplete="off" ng-change="inputChangeHandler(searchStr)"/>' +
-            '  <div id="{{id}}_dropdown" class="angucomplete-dropdown" ng-show="showDropdown">' +
+            '  <perfect-scrollbar class="scroller angucomplete-dropdown" wheel-propagation="true" wheel-speed="10" min-scrollbar-length="20" id="{{id}}_dropdown" ng-show="showDropdown">' +
             '    <div class="angucomplete-searching" ng-show="searching" ng-bind="textSearching"></div>' +
             '    <div class="angucomplete-searching" ng-show="!searching && (!results || results.length == 0)" ng-bind="textNoResults"></div>' +
             '    <div class="angucomplete-row" ng-repeat="result in results" ng-click="selectResult(result)" ng-mouseenter="hoverRow($index)" ng-class="{\'angucomplete-selected-row\': $index == currentIndex}">' +
@@ -60,7 +60,7 @@
             '      <div ng-if="matchClass && result.levelName && result.levelName != \'\'" class="angucomplete-description" ng-bind-html="result.levelName"></div>' +
             '      <div ng-if="!matchClass && result.levelName && result.levelName != \'\'" class="angucomplete-description">{{result.levelName}}</div>' +
             '    </div>' +
-            '  </div>' +
+            '  </perfect-scrollbar>' +
             '</div>'
 
         );

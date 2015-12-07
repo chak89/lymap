@@ -13,9 +13,11 @@
     <link rel="stylesheet" href="css/bootstrap.css"/>
     <link rel="stylesheet" href="css/bootstrap-theme.css"/>
 
+    <!-- perfect-scrollbar -->
+    <link rel="stylesheet" href="css/perfect-scrollbar.min.css" />
+
     <!-- Main styling CSS -->
     <link rel="stylesheet" href="css/styles.css"/>
-
 
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=weather,visualization,panoramio"></script>
     <script type="text/javascript" src="js/markerclusterer.js"></script>
@@ -24,6 +26,10 @@
     <script type="text/javascript" src="js/angular-resource.min.js"></script>
     <script type="text/javascript" src="js/angular-animate.min.js"></script>
     <script type="text/javascript" src="js/ui-bootstrap-tpls-0.14.3.min.js"></script>
+    <!-- Testimports for perfect-scrollbar -->
+    <script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
+    <script type="text/javascript" src="js/perfect-scrollbar.with-mousewheel.min.js"></script>
+    <script type="text/javascript" src="js/angular-perfect-scrollbar.js"></script>
     <script type="text/javascript" src="js/angucompleter.js"></script>
     <script type="text/javascript" src="js/functions.js"></script>
 
@@ -38,6 +44,7 @@
               Lymap <span>/ Sierra Leone</span>
           </div>
           <div class="search">
+
                <div angucomplete-alt id="angu1" class="search-list-container"
                     placeholder="Search for facility..."
                     maxlength="50"
@@ -50,14 +57,19 @@
                     minlength="0"
                     input-class="form-control form-control-small"
                     match-class="highlight">
-               </div>
+
+               </div> <!-- Angucomplete -->
+              
               <!--  TODO move select in angucompleter -->
-               <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
+               <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">                  
                    <option value="">Filter</option>
                    <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
                </select>
+
+
           </div>
-      </div>
+      </div> <!-- Search container -->
+
       <!-- container fluid -->
       <div class="map-container">
           <div class="show-buttons">

@@ -41,6 +41,7 @@
                 }
             }
         })
+
         .controller('mapController', function($scope, $http, $location, orgUnits, $q, $window, $uibModal, $compile, googleMaps) {
 
         //Set map options
