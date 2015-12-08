@@ -533,9 +533,22 @@
 
         // Controller for editing existing facilities
     
-        .controller('EditUnitController', function($scope, $uibModalInstance, id, orgUnits, $q) {
+        .controller('EditUnitController', function($scope, $uibModalInstance, id, orgUnits, SharedVariables) {
             $scope.updateUnit = function() {
-                $scope.editUnit.$update();
+                $scope.editUnit.$update(function(success) {
+                    if (success.httpStatusCode == 200) {
+                        angular.forEach(SharedVariables, function(i , e) {
+                            if (i.id == id) {
+                                if ($scope.name)
+                                    i.name = $scope.name;
+                                if ($scope.shortName)
+                                    i.shortName = $scope.shortName;
+                                if ($scope.openingDate)
+                                    i.openingDate = $scope.openingDate;
+                            }
+                        })
+                    }
+                });
                 $uibModalInstance.dismiss('cancel');
             };
 
