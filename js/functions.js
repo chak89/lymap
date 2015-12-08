@@ -547,6 +547,9 @@
             //Initialise parent and featureType properties.
             //Automatically assign coordinates to the modal form.
 
+
+            // Fix this
+
             console.log("Latitude: " + $scope.lat);
             console.log("Longitude: " + $scope.lng);
 
