@@ -121,7 +121,8 @@
           -->
            <script type="text/ng-template" id="addUnitContent.html">
                   <form role="form" ng-submit="addUnit()">
-                   <input type="parent" ng-model="addFacility.parent" placeholder="Parent" />
+                  Select Parent Node:
+                  <select class="form-control" ng-model='selectedParent' ng-change="changedValue(selectedParent)" ng-options='name.name for name in allLevel3Units'></select>
                    <input type="text" ng-model="addFacility.shortName" placeholder="Short org name" />
                    <input type="text"  datetime="MM/dd/YYYY" name="input" ng-model="addFacility.openingDate"
                           placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
