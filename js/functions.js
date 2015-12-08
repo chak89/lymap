@@ -32,7 +32,7 @@
     })
 
         .factory('orgUnitss', function($resource) {
-            return $resource('http://localhost:8082/api/organisationUnits', {}, {
+            return $resource('http://localhost:8080/api/organisationUnits', {}, {
                 create: {method: 'POST'}
             })
         })
@@ -57,6 +57,8 @@
         })
 
         .controller('mapController', function($scope, SharedVariables,$http, $location, orgUnits,orgUnitss, $q, $window, $uibModal, $compile, googleMaps) {
+
+            $scope.currentCoordinates;
 
             $scope.loader = document.getElementById('loader');
 
@@ -347,9 +349,11 @@
 
                         // Initialize the listener for the add facility functionality
 
+                       
+
                         google.maps.event.addListener($scope.map, "rightclick",function(event){
+
                             showContextMenu(event.latLng);
-                            
 
                         });
 
@@ -475,43 +479,6 @@
             });
 
 
-
-            
-
-            /**************** Find Me button geolocation - Chak ongoing *******************/
-            // $scope.currentLocation = "Current Location";
-            // $scope.supportsGeo = $window.navigator;
-            // $scope.position = null;
-            // $scope.waitForPositionMessage = "";
-
-            // $scope.getCurrentLocation = function() {
-            //     $scope.waitForPositionMessage = "Getting position, will plot to map when ready!";
-            //     window.navigator.geolocation.getCurrentPosition(function(position) {
-            //         $scope.$apply(function() {
-            //             $scope.position = position;
-            //             //console.log($scope.position);
-            //             //console.log($scope.position.coords.latitude);
-            //             //console.log($scope.position.coords.longitude);
-
-            //             $scope.$watch($scope.position, function() {
-
-            //                 //Create marker
-            //                 m = new google.maps.Marker({
-            //                 map: $scope.map,
-            //                 position: new google.maps.LatLng($scope.position.coords.latitude,$scope.position.coords.longitude),
-            //                 title: $scope.currentLocation
-            //                 });
-            //                 $scope.waitForPositionMessage = "";
-            //             });
-
-            //         });
-            //     }, function(error) {
-            //         $scope.waitForPositionMessage = "";
-            //         alert(error);
-            //     });
-            // };  
-
-
                 // Filter
                 $scope.changeFilter = function (dataLevels) {
                     if (dataLevels != '') {
@@ -538,28 +505,6 @@
                 $scope.editUnit.$update();
                 $uibModalInstance.dismiss('cancel');
             };
-
-            //TODO reusable part
-            //$scope.Levels = orgUnits.getLevels(function(data) {
-            //    $scope.levels = [];
-            //
-            //    for (var i = 0; i < data.organisationUnitLevels.length; i++) {
-            //        $scope.levels.push(orgUnits.getLevel().get({id: data.organisationUnitLevels[i].id}).$promise);
-            //    }
-            //
-            //    $scope.allLevels = [];
-            //    $q.all($scope.levels).then(function(levels) {
-            //        for (var i = 0; i < levels.length; i++) {
-            //            $scope.allLevels.push(levels[i]);
-            //        }
-            //        orgUnits.orgUnit().get({id: id}).$promise.then(function(result) {
-            //            $scope.editUnit = result;
-            //            $scope.editUnit.openingDate = new Date($scope.editUnit.openingDate);
-            //            //TODO fix this part... apply current selected
-            //            $scope.editUnit.level = $scope.allLevels[1];
-            //        });
-            //    });
-            //});
 
         orgUnits.orgUnit().get({id: id}).$promise.then(function(result) {
             $scope.editUnit = result;
@@ -593,19 +538,27 @@
             $scope.selectedParent = $scope.allLevel3Units[0];
 
 
+          
+
+            $scope.position = marker.getPosition();
+            $scope.lat = $scope.position.lat();
+            $scope.lng = $scope.position.lng();
+
             //Initialise parent and featureType properties.
-            //Seems like level is auto choosed.
-            //TODO: Auto add coordinates in the modal form.
+            //Automatically assign coordinates to the modal form.
+
+            console.log("Latitude: " + $scope.lat);
+            console.log("Longitude: " + $scope.lng);
+
             $scope.addFacility = {
                 parent:{"id": $scope.selectedParent.id, "name": $scope.selectedParent.name},
                 featureType:"POINT",
-                //level: "4"
-                coordinates:"[" + "8.689639068127663"+ "," + "-12.01904296875" + "]",
+                coordinates:"[" + $scope.lat+ "," + $scope.lng + "]",
             };
 
 
-
             //Change parent according to the dropdown list
+
             $scope.changedValue=function(item){
                 $scope.addFacility.parent.name=item.name;
                 $scope.addFacility.parent.id=item.id;
@@ -613,6 +566,7 @@
 
 
             $scope.addUnit = function() {
+
                 orgUnitss.create( $scope.addFacility).$promise.then(
                 //success
                 function( value ){
@@ -625,31 +579,6 @@
                 );
                 $uibModalInstance.dismiss('cancel');
             };
-
-            //TODO: Fix references to different parents.
-            //name,shortName, openingDate are mandatory, also make openingDate have to autofill with format YY-MM-DD
-            //Traditional way of POSTING data
-            //$scope.addUnit = function(orgUnitData) {
-            //
-            //    var postData = {
-            //        "name" : orgUnitData.nname,
-            //        "shortName" : orgUnitData.shortName,
-            //        "level" : "4",
-            //        "parent": {"id":"YuQRtpLP10I", "name": "Badjia"},
-            //        //"description" : orgUnitData.ddescription,
-            //        //"code" : orgUnitData.ccode,
-            //        "openingDate" : "2015-12-04",
-            //        //"comment" : orgUnitData.comment,
-            //        "coordinates" : "[" + "41.40338"+ "," + "2.17403" + "]",
-            //        //"longitude" : orgUnitData.longitude,
-            //       //"latitude" : orgUnitData.latitude,
-            //        //"url" : orgUnitData.url,
-            //        //"contactPerson" : orgUnitData.contactPerson,
-            //        //"address" : orgUnitData.address,
-            //        //"email" : orgUnitData.email,
-            //        //"phoneNumber" : orgUnitData.phoneNumber
-            //        //"featureType" : "NONE | POINT"
-            //    };
 
             //close modals if clicked somewhere or cancelled
             $uibModalInstance.result.then(function(){}, function() {
