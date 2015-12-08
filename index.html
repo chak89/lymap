@@ -64,8 +64,13 @@
                     minlength="0"
                     input-class="form-control form-control-small"
                     match-class="highlight">
-
                </div> <!-- Angucomplete -->
+
+               <!--Testing coords-->
+                <div>Latitude: {{latlng[0]}}
+               <br>
+               longitude: {{latlng[1]}}
+               </div>
               
               <!--  TODO move select in angucompleter -->
                <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">                  
@@ -106,13 +111,18 @@
 
 
 
-           <!--    Add a facility    -->
 
+           <!--    Add a facility    -->
+           <!-- TODO:
+          Add following fields :parent,name,shortName,openingDate,description,code,comment,coordinates,url,contactPerson,address,email,phoneNumber
+          Where name,shortName,parent and openingDate are mandatory fields. 
+          We should get a list of level 3 parents to choose from.
+          -->
             <script type="text/ng-template" id="addUnitContent.html">
                   <form role="form" ng-submit="addUnit()">
-                    <input type="text" ng-model="addUnit.nname" placeholder="Organisation name" />
-                    <input type="text" ng-model="addUnit.shortName" />
-                   <input type="date"  datetime="MM/dd/YYYY" name="input" ng-model="addUnit.openingDate"
+                    <input type="text" ng-model="addFacility.name" placeholder="Organisation name" />
+                    <input type="text" ng-model="addFacility.shortName" />
+                   <input type="date"  datetime="MM/dd/YYYY" name="input" ng-model="addFacility.openingDate"
                           placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
                    <input type="submit" class="btn btn-primary" value="Save"/>
                </form>

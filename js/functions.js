@@ -30,6 +30,13 @@
         };
 
     })
+
+        .factory('orgUnitss', function($resource) {
+            return $resource('http://localhost:8082/api/organisationUnits', {}, {
+                create: {method: 'POST'}
+            })
+        })
+
         .factory('googleMaps', function($resource) {
             return {
                 //check country
@@ -42,7 +49,7 @@
             }
         })
 
-        .controller('mapController', function($scope, $http, $location, orgUnits, $q, $window, $uibModal, $compile, googleMaps) {
+        .controller('mapController', function($scope, $http, $location, orgUnits,orgUnitss, $q, $window, $uibModal, $compile, googleMaps) {
 
         $scope.loader = document.getElementById('loader');
 
@@ -210,7 +217,7 @@
                             for (var i = 0; i < levels.length; i++) {
                                 $scope.allLevels.push(levels[i]);
                             }
-
+                            //Do we really need this if statement? This causes alot of facilites without featureType and coordinates to be left out from the search
                             for (var x = 0; x < units.length; x++) {
                                 if (!angular.isUndefined(units[x].coordinates) && units[x].featureType !== 'NONE')
                                 {
@@ -561,35 +568,32 @@
 
 
         // Controller for adding new facilities
-        
+        .controller('AddUnitController', function($scope, $uibModalInstance, marker, orgUnitss) {
 
-        .controller('AddUnitController', function($scope, $uibModalInstance, marker, orgUnits) {
+            //Some random testing properties, the parent ID and name have to exist!
+            $scope.addFacility = {
+                featureType:"POINT",
+                parent:{"id":"ScjatY1Bd3G", "name": "Badjia"},
+                coordinates:"[" + "41.40338"+ "," + "2.17403" + "]"
+            }
 
             $scope.addUnit = function() {
-                //$scope.addU = new orgUnits();
-                //$scope.addU.orgUnit.$save(function() {
-                //
-                //});
+                orgUnitss.create( $scope.addFacility).$promise.then(
+                //success
+                function( value ){
+                    alert("Create success");
+                    $scope.addFacility=[];
+                },
+                //error
+                function( error ){
+                    alert("Create failed");}
+                );
                 $uibModalInstance.dismiss('cancel');
             };
 
-
-            //$scope.addUnit = function() {
-             //   $scope.addUnit.$update();
-            //    $uibModalInstance.dismiss('cancel');
-            //};
-
-
-
-            //TODO: Fix references to different parent levels.
+            //TODO: Fix references to different parents.
             //name,shortName, openingDate are mandatory, also make openingDate have to autofill with format YY-MM-DD
             //Traditional way of POSTING data
-            //Fetch data from modal addUnit form
-
-
-            
-            
-
             //$scope.addUnit = function(orgUnitData) {
             //
             //    var postData = {
@@ -609,32 +613,8 @@
             //        //"address" : orgUnitData.address,
             //        //"email" : orgUnitData.email,
             //        //"phoneNumber" : orgUnitData.phoneNumber
+            //        //"featureType" : "NONE | POINT"
             //    };
-            //
-            //    console.log("name="+orgUnitData.nname);
-            //    console.log("shortName="+orgUnitData.shortName);
-            //    console.log("openingDate="+orgUnitData.openingDate);
-            //    console.log("level="+orgUnitData.level);
-            //
-            //
-            //    var request = $http( {
-            //        method: "POST",
-            //        url: "http://localhost:8080/api/organisationUnits/",
-            //        data: postData,
-            //        headers: {
-            //            'Authorization': 'Basic YWRtaW46ZGlzdHJpY3Q=',
-            //            'Content-Type': 'application/json'
-            //        },
-            //    });
-            //
-            //    request.success(function(data) {
-            //        alert("Create success");
-            //        $scope.orgUnitData = undefined;
-            //    }).error(function(data, status) {
-            //        alert("Create error");
-            //    });
-            //};
-
 
             //close modals if clicked somewhere or cancelled
             $uibModalInstance.result.then(function(){}, function() {
