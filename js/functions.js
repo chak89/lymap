@@ -572,9 +572,9 @@
 
             //Some random testing properties, the parent ID and name have to exist!
             $scope.addFacility = {
-                featureType:"POINT",
-                parent:{"id":"ScjatY1Bd3G", "name": "Badjia"},
-                coordinates:"[" + "41.40338"+ "," + "2.17403" + "]"
+                //featureType:"POINT",
+                //parent:{"id":"ScjatY1Bd3G", "name": "Badjia"},
+                //coordinates:"[" + "41.40338"+ "," + "2.17403" + "]"
             }
 
             $scope.addUnit = function() {

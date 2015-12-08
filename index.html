@@ -116,14 +116,25 @@
            <!-- TODO:
           Add following fields :parent,name,shortName,openingDate,description,code,comment,coordinates,url,contactPerson,address,email,phoneNumber
           Where name,shortName,parent and openingDate are mandatory fields. 
+
           We should get a list of level 3 parents to choose from.
           -->
-            <script type="text/ng-template" id="addUnitContent.html">
+           <script type="text/ng-template" id="addUnitContent.html">
                   <form role="form" ng-submit="addUnit()">
-                    <input type="text" ng-model="addFacility.name" placeholder="Organisation name" />
-                    <input type="text" ng-model="addFacility.shortName" />
-                   <input type="date"  datetime="MM/dd/YYYY" name="input" ng-model="addFacility.openingDate"
+                   <input type="parent" ng-model="addFacility.parent" placeholder="Parent" />
+                   <input type="text" ng-model="addFacility.shortName" placeholder="Short org name" />
+                   <input type="text"  datetime="MM/dd/YYYY" name="input" ng-model="addFacility.openingDate"
                           placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
+                   <input type="text" ng-model="addFacility.name" placeholder="Full org name" />
+                   <input type="text" ng-model="addFacility.description" placeholder="Description" />
+                   <input type="text" ng-model="addFacility.code" placeholder="Code" />
+                   <input type="text" ng-model="addFacility.comment" placeholder="Comments here" />
+                   <input type="coordinates" ng-model="addFacility.coordinates" placeholder="Coordinates" />
+                   <input type="text" ng-model="addFacility.url" placeholder="URL" />
+                   <input type="text" ng-model="addFacility.contactPerson" placeholder="contactPerson" />
+                   <input type="text" ng-model="addFacility.address" placeholder="Address" />
+                   <input type="text" ng-model="addFacility.email" placeholder="Email" />
+                   <input type="text" ng-model="addFacility.phoneNumber" placeholder="Phonenumber" />
                    <input type="submit" class="btn btn-primary" value="Save"/>
                </form>
                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
