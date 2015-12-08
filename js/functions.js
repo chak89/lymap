@@ -553,7 +553,7 @@
             $scope.addFacility = {
                 parent:{"id": $scope.selectedParent.id, "name": $scope.selectedParent.name},
                 featureType:"POINT",
-                coordinates:"[" + $scope.lat+ "," + $scope.lng + "]",
+                coordinates:"[" + $scope.lng+ "," + $scope.lat + "]",
             };
 
 
