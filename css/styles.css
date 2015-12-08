@@ -1,3 +1,12 @@
+#loader {
+    /*background: url('../img/loader.gif') no-repeat center center;*/
+    background: url('../img/loader.gif') no-repeat center center;
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+}
+
 .scroller {
     position: absolute;
     opacity: 0.6;
@@ -37,7 +46,7 @@
 }
 
 #angu1_dropdown {
-    height: 96.5%;
+    height: 96.0%;
     max-height: 100%;
     overflow: hidden;
     padding-right: 8px
@@ -365,23 +374,6 @@ html, body {
 }
 .title h1 {
     text-align :center;
-}
-
-/*
-#loader {
-    background: url('../img/loader.gif') no-repeat center center;
-    width: 480px;
-    height: 259px;
-    margin: 0 auto;
-    
-}*/
-    
-#loader {
-    background: url('../img/loader.gif') no-repeat center center;
-    width: 1000px;
-    height: 1000px;
-    margin: 0 auto;
-    
 }
 
 .show {

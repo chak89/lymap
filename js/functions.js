@@ -44,6 +44,8 @@
 
         .controller('mapController', function($scope, $http, $location, orgUnits, $q, $window, $uibModal, $compile, googleMaps) {
 
+        $scope.loader = document.getElementById('loader');
+
         //Set map options
         $scope.mapOptions = {
             zoom: 8,
@@ -181,6 +183,7 @@
 
 
         $scope.Units = orgUnits.getOrgUnits(function(data) {
+
                 $scope.orgUnits = data;
                 $scope.orgUnitId = [];
                 for (var i = 0; i < $scope.orgUnits.organisationUnits.length; i++) {
@@ -190,8 +193,8 @@
 
                 $scope.allUnits = [];
                     //Wait until the data is fetched from the db
-                $q.all($scope.orgUnitId).then(function(units) {
 
+                $q.all($scope.orgUnitId).then(function(units) {
                     //TODO reusable part
                     $scope.Levels = orgUnits.getLevels(function(data) {
                         $scope.levels = [];
@@ -305,9 +308,12 @@
                                 }
 
                             }
+
+                            // hide loader when all the data is fetched and filtered
+                            $scope.loader.className = "hide"
                         });
                     });
-
+                    
 
                     //Modal editUnit
                     $scope.open = function(id) {
@@ -322,7 +328,6 @@
                             }
                         });
                     };
-
 
 
                     // Initialize the listener for the add facility functionality

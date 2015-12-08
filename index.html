@@ -26,7 +26,6 @@
     <script type="text/javascript" src="js/angular-resource.min.js"></script>
     <script type="text/javascript" src="js/angular-animate.min.js"></script>
     <script type="text/javascript" src="js/ui-bootstrap-tpls-0.14.3.min.js"></script>
-    <!-- Testimports for perfect-scrollbar -->
     <script type="text/javascript" src="js/perfect-scrollbar.min.js"></script>
     <script type="text/javascript" src="js/perfect-scrollbar.with-mousewheel.min.js"></script>
     <script type="text/javascript" src="js/angular-perfect-scrollbar.js"></script>
@@ -40,10 +39,18 @@
  
      <!-- Navigation Bar - Eirik in progress-->
       <div class="search-container">
+
           <div class="title">
-              Lymap <span>/ Sierra Leone</span>
+              <a class="brand" style="text-decoration: none;" href="https://wiki.uio.no/mn/ifi/inf5750/index.php/Lymap">
+                Lymap <span>/ Sierra Leone</span>
+              </a>
           </div>
+
           <div class="search">
+
+
+            <!-- Display loading-gif initially -->
+            <div id="loader" class="show"></div> 
 
                <div angucomplete-alt id="angu1" class="search-list-container"
                     placeholder="Search for facility..."
@@ -111,6 +118,7 @@
                </form>
                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
            </script>
+
 
     </div><!-- map controller -->
 
