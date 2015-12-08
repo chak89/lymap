@@ -1,3 +1,18 @@
+input[id="mandatoryField"]::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    red;
+}
+input[id="mandatoryField"]:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    red;
+   opacity:  1;
+}
+input[id="mandatoryField"]::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    red;
+   opacity:  1;
+}
+input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    red;
+}
+
 #loader {
     background: url('../img/loader.gif') no-repeat center center;
     position: absolute;
