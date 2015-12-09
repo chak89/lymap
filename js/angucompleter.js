@@ -137,8 +137,13 @@
                 if (scope.localData) {
                     scope.showDropdown = true;
                     showAll();
-
                 }
+            });
+
+            scope.$on('search-change', function(event, args) {
+                scope.localData = args;
+                scope.$broadcast('angucomplete-alt:clearInput');
+                showAll();
             });
 
             function handleInputChange(newval, initial) {
@@ -252,6 +257,7 @@
             }
 
             function keyupHandler(event) {
+
                 var which = ie8EventNormalizer(event);
                 if (which === KEY_LF || which === KEY_RT) {
                     // do nothing
@@ -281,6 +287,7 @@
                     }
 
                     if (!scope.searchStr || scope.searchStr === '') {
+
                         scope.showDropdown = false;
                     } else if (scope.searchStr.length >= minlength) {
                         initResults();

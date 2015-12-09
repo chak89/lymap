@@ -97,14 +97,14 @@
            <!--    Edit a facility    -->
 
            <script type="text/ng-template" id="editUnitContent.html">
-               <form role="form" ng-submit="updateUnit()">
+               <form role="form">
                     <input type="text" ng-model="editUnit.name" id="name" />
                     <input type="text" ng-model="editUnit.shortName" id="shortName" />
-                    <input type="date" id="openingDate" datetime="MM/dd/YYYY" name="input" ng-model="editUnit.openingDate"
-                          placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
+                    <input type="date" id="openingDate" datetime="M/d/yyyy" name="input" ng-model="editUnit.openingDate"
+                          placeholder="M/d/yyyy" min="1970-01-01" max="2015-12-31" />
                     <!--<select name="eLevel"  ng-model="editUnit.level" ng-options="level.name for level in allLevels track by level.level">-->
                     <!--</select>-->
-                    <input type="submit" class="btn btn-primary" value="Save"/>
+                    <input type="submit" class="btn btn-primary" ng-click="updateUnit(editUnit)" value="Save"/>
                   </form>
                   <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
                 </script>
