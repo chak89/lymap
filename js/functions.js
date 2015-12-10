@@ -194,10 +194,9 @@
                         $scope.marker.setMap(null);
                     }
 
-
-                    //console.log(info.coordinates);
                     $scope.coordInfo = [];
                     $scope.bounds = new google.maps.LatLngBounds();
+
                     //Get the coordinates and create an array
                     $scope.coords = info.coordinates.replace(/[^0-9\-.,]+/g,"").split(',');
                     for (var i = 0; i < $scope.coords.length; i++) {
@@ -206,7 +205,7 @@
                         }
                     }
 
-                    //console.log($scope.coordInfo);
+                
                     $scope.polygon = new google.maps.Polygon({
                         paths: $scope.coordInfo,
                         strokeColor: '#FF0000',
@@ -252,6 +251,7 @@
                             $scope.levels = [];
 
                             for (var i = 0; i < data.organisationUnitLevels.length; i++) {
+
                                 //Iterate and get each unit one by one, put into levelNames array
                                 //$scope.levelNames.push($scope.levels.organisationUnitLevels[i]);
                                 $scope.levels.push(orgUnits.getLevel().get({id: data.organisationUnitLevels[i].id}).$promise);
@@ -407,8 +407,6 @@
 
                         // Initialize the listener for the add facility functionality
 
-                       
-
                         google.maps.event.addListener($scope.map, "rightclick",function(event){
 
                             showContextMenu(event.latLng);
@@ -417,6 +415,7 @@
 
                         //TODO improve this part
                         //remove menu if dragged, clicked somewhere or zoomed
+
                         google.maps.event.addListener($scope.map, 'click', function() {
                             $('.contextmenu').remove();
                         });
@@ -510,28 +509,16 @@
                             var x = clickedPosition.x ;
                             var y = clickedPosition.y ;
 
-                            if((mapWidth - x ) < menuWidth)//if to close to the map border, decrease x position
+                            if((mapWidth - x ) < menuWidth) //if to close to the map border, decrease x position
                                 x = x - menuWidth;
-                            if((mapHeight - y ) < menuHeight)//if to close to the map border, decrease y position
+                            if((mapHeight - y ) < menuHeight) //if to close to the map border, decrease y position
                                 y = y - menuHeight;
 
-                            $('.contextmenu').css('left',x  );
-                            $('.contextmenu').css('top',y );
+                            $('.contextmenu').css('left',x);
+                            $('.contextmenu').css('top',y);
                         };
 
-
-
-                        //Create Clusters
-                        //$scope.mc = new MarkerClusterer($scope.map, $scope.markers, {
-                        //    maxZoom: 18
-                        //});
-                        //var loader = document.getElementById('loader'),
-                        //    map_wrapper = document.getElementById('map-wrapper');
-                        //loader.className = "hide";
-                        //map_wrapper.className = "show";
                         google.maps.event.trigger($scope.map, "resize");
-
-                        //autocompleter select unit and zoom/openInfoWindow
 
                     })
             });
@@ -557,7 +544,7 @@
 
 
         // Controller for editing existing facilities
-    
+
         .controller('EditUnitController', function($scope, $uibModalInstance, id, orgUnits, changeUnits, $rootScope, SharedVariables, $filter) {
             $scope.updateUnit = function(unit) {
                 $scope.sent = false;
@@ -599,8 +586,9 @@
 
 
 
-        // Controller for adding new facilities
-        .controller('AddUnitController', function($scope, SharedVariables, $uibModalInstance, marker, orgUnitss) {
+        //Controller for adding new facilities
+
+        .controller('AddUnitController', function($scope, SharedVariables, $uibModalInstance, marker, orgUnitss, changeUnits) {  //Add addUnits?
 
            //Shared variable, defined in .factory.
             $scope.allUnits = SharedVariables;
@@ -618,29 +606,22 @@
 
 
           
-
+            //Get the coordinates of the selected marker
             $scope.position = marker.getPosition();
+
             $scope.lat = $scope.position.lat();
             $scope.lng = $scope.position.lng();
 
-            //Initialise parent and featureType properties.
-            //Automatically assign coordinates to the modal form.
-
-
-            // Fix this
-
-            console.log("Latitude: " + $scope.lat);
-            console.log("Longitude: " + $scope.lng);
-
+            //Assign parent and coordinates to the given facility
             $scope.addFacility = {
                 parent:{"id": $scope.selectedParent.id, "name": $scope.selectedParent.name},
                 featureType:"POINT",
                 coordinates:"[" + $scope.lng+ "," + $scope.lat + "]",
+
             };
 
 
             //Change parent according to the dropdown list
-
             $scope.changedValue=function(item){
                 $scope.addFacility.parent.name=item.name;
                 $scope.addFacility.parent.id=item.id;
@@ -651,12 +632,20 @@
 
                 orgUnitss.create( $scope.addFacility).$promise.then(
                 //success
-                function( value ){
+                function(value){
                     alert("Create success");
+
+                    // Hichael in progress: Updating units so that the added units shows up in search bar
+
+                    console.log($scope.addFacility)
+                    $scope.allUnits.push($scope.addFacility);                
+                    changeUnits.set($scope.allUnits);
+
                     $scope.addFacility=[];
+                    
                 },
                 //error
-                function( error ){
+                function(error){
                     alert("Create failed");}
                 );
                 $uibModalInstance.dismiss('cancel');
