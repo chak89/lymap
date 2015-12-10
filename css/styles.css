@@ -43,7 +43,6 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
 .angucomplete-holder {
     position: relative;
     float: left;
-    border: 1px solid black;
     border-right: #FFFFFF;
 }
 
@@ -51,8 +50,20 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
     position: absolute;
     top: 0;
     right: 0;
-    padding: 7.27px;
+    background: transparent;
+    padding: 7px 7px 8px;
+    border: none;
+    border-bottom: 1px solid #adadad;
+
 }
+
+#dropdownMenu1:focus {
+    border: none;
+    border-bottom: 1px solid #265a88;
+    box-shadow: none;
+    outline: none;
+}
+
 
 .search {
     position: relative;
@@ -63,9 +74,8 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
     height: 96.0%;
     max-height: 100%;
     overflow: hidden;
-    padding-right: 8px
+    padding-right: 13px
 }
-
 
 .angucomplete-holder {
     position: relative;
@@ -78,7 +88,7 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
     border-radius: 2px;
     padding: 6px;
     cursor: pointer;
-    z-index: 9999;
+    z-index: 1000;
     position: absolute;
     /*top: 32px;
     left: 0px;
@@ -99,15 +109,102 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
 }
 
 .angucomplete-row {
-    padding: 5px;
+    padding: 6px;
     color: #000000;
     margin-bottom: 4px;
     clear: both;
+    =webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
 }
 
 .angucomplete-selected-row {
-    background-color: lightblue;
-    color: #ffffff;
+    background-color: #F2F2F2;
+    =webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+    position: relative;
+}
+
+.angucomplete-row {
+    position: relative;
+}
+
+.angucomplete-row:before {
+    position: absolute;
+    content: '';
+    background-color: #adadad;
+    bottom:0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+}
+
+.angucomplete-row:after {
+    position: absolute;
+    content: '';
+    width: 0;
+    height: 2px;
+    background-color: #265a88;
+    left: 50%;
+    bottom: 0;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    transform: translateX(-50%);
+    -webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+.angucomplete-row:hover:after {
+    position: absolute;
+    content: '';
+    width: 100%;
+    height: 2px;
+    background-color: #337ab7;
+    left: 50%;
+    bottom: 0;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    transform: translateX(-50%);
+    -webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+input[type='text'].form-control, input[type='date'] {
+    border: none;
+    box-shadow: none;
+    border-bottom: 1px solid #adadad;
+    -webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+input[type='text'].form-control:focus, input[type='date']:focus {
+    border: none;
+    border-bottom: 1px solid #265a88;
+    -webkit-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    transition: all 0.4s;
+}
+label {
+    font-size: 12px;
+    color: #888888;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.modal-content {
+    padding: 24px;
 }
 
 .angucomplete-image-holder {
@@ -489,8 +586,13 @@ html, body {
 .search-container {
     float:left;
     position: relative;
+    display: block;
     width: 260px;
     height: 100%;
+    -webkit-box-shadow: 5px 3px 24px -10px rgba(0,0,0,0.75);
+    -moz-box-shadow: 5px 3px 24px -10px rgba(0,0,0,0.75);
+    box-shadow: 5px 3px 24px -10px rgba(0,0,0,0.75);
+    z-index: 1000;
 }
 
 .map-container {
@@ -525,7 +627,7 @@ html, body {
     position: absolute;
     top: 53px;
     left: 11px;
-    z-index: 99999;
+    z-index: 1000;
 }
 
 .clicked {
