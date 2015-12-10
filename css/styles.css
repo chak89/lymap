@@ -1,3 +1,79 @@
+.modal-content {
+    width:300px;
+}
+
+#editUnitDate {
+    font-size: 1em;
+    outline: none;
+    padding: 0.5em;
+    border-radius:10px;
+    display:block;   
+    width: 280px;
+    position: relative;
+    margin:10px 0;  
+    left:10px; 
+}
+
+.editNameButton {
+    font-size: 1em;
+    outline: none;
+    padding: 0.5em;
+    border-radius:10px;
+    display:block;    
+    width: 280px;
+    position: relative;
+    margin:10px 0;  
+    left:10px;  
+}
+
+.btn-warning {
+    font-size: 1em;
+    outline: none;
+    padding: 0.5em;
+    border-radius:10px;
+    display:block;    
+    width: 100px;
+    position: relative;
+    margin:10px 0; 
+    left: 50px; 
+}
+
+.btn-primary {
+    font-size: 1em;
+    outline: none;
+    padding: 0.5em;
+    border-radius:10px;
+    display:block;    
+    width: 100px;
+    position: relative;
+    left: 30px;  
+    float: left;
+}
+
+.addUnitBtns {
+    font-size: 1em;
+    outline: none;
+    padding: 0.5em;
+    border-radius:10px;
+    display:block;    
+    width: 280px;
+    position: relative;
+    margin:10px 0;  
+    left:10px;  
+}
+
+#mandatoryField {
+    font-size: 1em;
+    outline: none;
+    padding: 0.5em;
+    border-radius:10px;
+    display:block;    
+    width: 280px;
+    position: relative;
+    margin:10px 0;  
+    left:10px;  
+}
+
 input[id="mandatoryField"]::-webkit-input-placeholder { /* WebKit, Blink, Edge */
     color:    red;
 }
