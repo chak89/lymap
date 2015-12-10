@@ -73,7 +73,7 @@
                </div>
               
               <!--  TODO move select in angucompleter -->
-               <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">                  
+               <select id="dropdownMenu1" name="fiterLevel"  ng-model="dataLevels" ng-change="changeFilter(dataLevels)">
                    <option value="">Filter</option>
                    <option ng-repeat="level in allLevels" value="{{level.level}}">{{level.name}}</option>
                </select>
@@ -98,15 +98,27 @@
 
            <script type="text/ng-template" id="editUnitContent.html">
                <form role="form">
-                    <input class="editNameButton" type="text" ng-model="editUnit.name" id="name" />
-                    <input class="editNameButton" type="text" ng-model="editUnit.shortName" id="shortName" />
-                    <input id="editUnitDate" type="date" id="openingDate" datetime="M/d/yyyy" name="input" ng-model="editUnit.openingDate"
+                   <div class="form-group">
+                       <label for="e-name">Name</label>
+                       <input type="text" ng-model="editUnit.name" class="form-control" id="e-name" />
+                   </div>
+                   <div class="form-group">
+                       <label for="e-shortName">Short Name</label>
+                       <input type="text" ng-model="editUnit.shortName" class="form-control" id="e-shortName" />
+                   </div>
+                   <div class="form-group">
+                       <label for="e-openingDate">Opening Date</label>
+                    <input type="date" id="e-openingDate" datetime="M/d/yyyy" name="input" ng-model="editUnit.openingDate"
                           placeholder="M/d/yyyy" min="1970-01-01" max="2015-12-31" />
+                   </div>
                     <!--<select name="eLevel"  ng-model="editUnit.level" ng-options="level.name for level in allLevels track by level.level">-->
                     <!--</select>-->
-                    <input type="submit" class="btn btn-primary" ng-click="updateUnit(editUnit)" value="Save"/>
-                    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                   <div class="form-group">
+                        <input type="submit" class="btn btn-primary" ng-click="updateUnit(editUnit)" value="Save"/>
+                        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                   </div>
                   </form>
+
                 </script>
 
 
@@ -121,25 +133,24 @@
           -->
            <script type="text/ng-template" id="addUnitContent.html">
                   <form role="form" ng-submit="addUnit()">
-                    <center><b>Select Parent Node</b></center> 
-                    <select class="form-control" id="mandatoryField" ng-model='selectedParent' ng-change="changedValue(selectedParent)" ng-options='name.name for name in allLevel3Units'></select>
-                    <input id="mandatoryField" type="text" ng-model="addFacility.shortName" placeholder="Short org name" />
-                    <input id="mandatoryField" type="text"  datetime="MM/dd/YYYY" name="input" ng-model="addFacility.openingDate"
+                  Select Parent Node:
+                  <select class="form-control" id="mandatoryField" ng-model='selectedParent' ng-change="changedValue(selectedParent)" ng-options='name.name for name in allLevel3Units'></select>
+                  <input id="mandatoryField" type="text" ng-model="addFacility.shortName" placeholder="Short org name" />
+                  <input id="mandatoryField" type="text"  datetime="MM/dd/YYYY" name="input" ng-model="addFacility.openingDate"
                         placeholder="yyyy-MM-dd" min="1970-01-01" max="2015-12-31" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.name" placeholder="Full org name" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.description" placeholder="Description" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.code" placeholder="Code" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.comment" placeholder="Comments here" />
-                    <input class="addUnitBtns" type="coordinates" ng-model="addFacility.coordinates" placeholder="Coordinates" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.url" placeholder="URL" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.contactPerson" placeholder="contactPerson" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.address" placeholder="Address" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.email" placeholder="Email" />
-                    <input class="addUnitBtns" type="text" ng-model="addFacility.phoneNumber" placeholder="Phonenumber" />
-                    
-                    <input type="submit" class="btn btn-primary" value="Save"/>                   
-                    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-               </form> <!-- End form -->
+                   <input type="text" ng-model="addFacility.name" placeholder="Full org name" />
+                   <input type="text" ng-model="addFacility.description" placeholder="Description" />
+                   <input type="text" ng-model="addFacility.code" placeholder="Code" />
+                   <input type="text" ng-model="addFacility.comment" placeholder="Comments here" />
+                   <input type="coordinates" ng-model="addFacility.coordinates" placeholder="Coordinates" />
+                   <input type="text" ng-model="addFacility.url" placeholder="URL" />
+                   <input type="text" ng-model="addFacility.contactPerson" placeholder="contactPerson" />
+                   <input type="text" ng-model="addFacility.address" placeholder="Address" />
+                   <input type="text" ng-model="addFacility.email" placeholder="Email" />
+                   <input type="text" ng-model="addFacility.phoneNumber" placeholder="Phonenumber" />
+                   <input type="submit" class="btn btn-primary" value="Save"/>
+               </form>
+               <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
            </script>
 
 
