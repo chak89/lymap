@@ -63,6 +63,17 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
     box-shadow: none;
     outline: none;
 }
+select {
+    border: none !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid #888 !important;
+}
+select:focus {
+    border: none !important;
+    border-bottom: 1px solid #265a88 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
 
 
 .search {
@@ -113,7 +124,7 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
     color: #000000;
     margin-bottom: 4px;
     clear: both;
-    =webkit-transition: all 0.4s;
+    -webkit-transition: all 0.4s;
     -moz-transition: all 0.4s;
     -o-transition: all 0.4s;
     transition: all 0.4s;
@@ -121,7 +132,7 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
 
 .angucomplete-selected-row {
     background-color: #F2F2F2;
-    =webkit-transition: all 0.4s;
+    -webkit-transition: all 0.4s;
     -moz-transition: all 0.4s;
     -o-transition: all 0.4s;
     transition: all 0.4s;
@@ -493,8 +504,29 @@ html, body {
 }
 .infoWindowContent {
     font-size:  14px !important;
-    padding-top: 10px;
+    padding: 22px 6px 6px;
+    min-width: 180px;
 }
+
+.infoWindowContent h3 {
+    font-size: 14px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 32px;
+    padding-bottom: 6px;
+}
+
+.infoWindowContent p {
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
+}
+
+.infoWindowContent p span {
+    color: #000;
+    font-style: normal;
+}
+
 .angucomplete-holder {
     margin-top: 0px;
 }
@@ -656,6 +688,18 @@ html, body {
     width: 80px;
     background-color: #fff;
     box-shadow: rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px;
+}
+
+#a-openingDate {
+    display: block;
+    margin-top: 12px;
+}
+
+.label-title p, .f-content div span {
+    font-size: 12px;
+    color: #888888;
+    font-weight: normal;
+    font-style: italic;
 }
 
 

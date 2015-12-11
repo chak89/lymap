@@ -5,7 +5,6 @@
         .factory('orgUnits', function($http, $resource) {
             return {
                 // Retrieve all organisational units
-
                 getOrgUnits: function(callback) {
                     $http.get('http://localhost:8080/api/organisationUnits.json?paging=false&links=false').success(callback);
                 },
@@ -59,21 +58,6 @@
             return allUnits;
         })
 
-        // Fetching indiviual facilities
-
-        .factory('fetchUnit', function($resource) {
-
-                return { 
-
-            get: function () {
-                    return $resource('http://localhost:8080/api/organisationUnits/:id', {id: '@id'}, {
-                        method: 'GET'
-                        
-                    });
-                }
-            }
-        })
-
         .service('changeUnits', function() {
             var units = [];
 
@@ -90,197 +74,233 @@
 
         .controller('mapController', function($scope, $rootScope, changeUnits, SharedVariables,$http, $location, orgUnits,orgUnitss, $q, $window, $uibModal, $compile, googleMaps, $filter) {
 
+            // initialize variables
+            var map, id, string, $btn, content, infoWindow, marker, polygon, coords, createInfoWindow, createMarker, createPolygon;
+
             $scope.loader = document.getElementById('loader');
 
             // Set map options
-            $scope.mapOptions = {
+            var mapOptions = {
                 zoom: 8,
                 center: new google.maps.LatLng(9.0131, -12.9487),
                 mapTypeId: google.maps.MapTypeId.TERRAIN
             };
 
-            $scope.map = new google.maps.Map(document.getElementById('map'), $scope.mapOptions);
+            map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-            $scope.markers = [];
+            infoWindow = new google.maps.InfoWindow();
 
-            $scope.createInfoWindow = function(info, type, update) {
+            var markers = [],
+                polygons = [],
+                levels = [];
 
-                var id = "'" + info.id + "'";
+            //update the infoWindow on edit
+           createInfoWindow = function(info, type) {
 
-                var string = '<div class="infoWindowContent">' +
-                    '<p> Opening Date: ' + $filter('date')(info.openingDate, 'M/d/yyyy') + '</p>' +
-                    '<p> Level: ' + info.levelName + '</p>' +
-                    '<p> Display name: ' + info.displayName + '</p>' +
-                    '<p> Short name: ' + info.shortName + '</p>' +
-                    '<div class="infoWindowContent"><button type="button" class="btn btn-default" ng-click="open(' + id + ')">Edit</button>' +
-                    '</div>';
+                id = "'" + info.id + "'";
 
-                var $btn = $compile(string)($scope);
+               //create the string for the infoWIndow
+               string = '<div class="infoWindowContent">' +
+                   '<h3>' + info.name + '</h3>' +
+                   '<p> Opening Date: <span>' + $filter('date')(info.openingDate, 'M/d/yyyy') + '</span></p>' +
+                   '<p> Level: <span>' + info.levelName + '</span></p>' +
+                   '<p> Display name: <span>' + info.displayName + '</span></p>' +
+                   '<p> Short name: <span>' + info.shortName + '</span></p>' +
+                   '<div class="infoWindowContent"><button type="button" class="btn btn-primary" ng-click="open(' + id + ')">Edit</button>' +
+                   '</div>';
 
+               //compile it in order to get into angular scope
+                $btn = $compile(string)($scope);
+
+               //check if its marker or polygon
                 if (type == 'marker') {
-                    $scope.infoWindow.setContent($btn[0]);
-                    var content = $btn[0];
+                    infoWindow.setContent($btn[0]);
+                    content = $btn[0];
 
-                    google.maps.event.addListener($scope.marker, 'click', (function(content) {
-                        return function() {
-                            $scope.infoWindow.setContent(content);
-                            $scope.infoWindow.open($scope.map, this);
-                            $scope.infoWindow['id'] = info.id;
-                        }
-                    })(content));
-
-                    if (update) {
-                        for (var i = 0; i < $scope.markers.length; i++) {
-                            if ($scope.markers[i].id == info.id) {
-                                google.maps.event.addListener($scope.markers[i], 'click', (function(content) {
+                        for (var i = 0; i < markers.length; i++) {
+                            //check if the marker is in the markers array
+                            if (markers[i].id == info.id) {
+                                google.maps.event.addListener(markers[i], 'click', (function(content) {
                                     return function() {
-                                        $scope.infoWindow.setContent(content);
-                                        $scope.infoWindow.open($scope.map, this);
-                                        $scope.infoWindow['id'] = info.id;
+                                        infoWindow.setContent(content);
+                                        infoWindow.open(map, this);
+                                        infoWindow['id'] = info.id;
                                     }
                                 })(content));
                             }
                         }
-                    }
-                    else {
-                        $scope.infoWindow.open($scope.map, $scope.marker);
-                        $scope.map.setCenter($scope.marker.getPosition());
-                    }
                 }
                 else {
-
-                    $scope.infoWindow.setContent($btn[0]);
-
-                    $scope.polygon.addListener('click', function(e) {
-                        $scope.infoWindow.setContent($btn[0]);
-                        $scope.infoWindow.setPosition(e.latLng);
-                        $scope.infoWindow.open($scope.map);
-                        $scope.infoWindow['id'] = info.id;
-                    });
-
-                    if (update) {
-                        var content = $btn[0];
-
-                        for (var i = 0; i < $scope.polygons.length; i++) {
-                            if ($scope.polygons[i].id == info.id) {
-                                google.maps.event.addListener($scope.polygons[i], 'click', (function(content) {
+                        content = $btn[0];
+                        for (var i = 0; i < polygons.length; i++) {
+                            //check if the polygon is in the polygons array
+                            if (polygons[i].id == info.id) {
+                                google.maps.event.addListener(polygons[i], 'click', (function(content) {
                                     return function() {
-                                        $scope.infoWindow.setContent(content);
-                                        $scope.infoWindow.open($scope.map, this);
-                                        $scope.infoWindow['id'] = info.id;
+                                        infoWindow.setContent(content);
+                                        infoWindow.open(map, this);
+                                        infoWindow['id'] = info.id;
                                     }
                                 })(content));
                             }
                         }
                     }
-                }
             }
+            //create Marker
+            createMarker = function (info, flag) {
 
-            $scope.infoWindow = new google.maps.InfoWindow();
-            $scope.createMarker = function (info, flag) {
-
-                if ($scope.marker && flag == false) {
-                    $scope.marker.setMap(null);
+                //remove markers or polygons if other marker clicked
+                if (marker && flag == false) {
+                    marker.setMap(null);
                 }
 
-                if ($scope.polygon && flag == false) {
-                    $scope.polygon.setMap(null);
+                if (polygon && flag == false) {
+                    polygon.setMap(null);
                 }
                 //Get the coordinates and create an array
-                $scope.coords = info.coordinates.replace(/[^0-9\-.,]+/g,"").split(',');
+                coords = info.coordinates.replace(/[^0-9\-.,]+/g,"").split(',');
 
                 //Create marker
-                $scope.marker = new google.maps.Marker({
-                    map: $scope.map,
-                    position: new google.maps.LatLng($scope.coords[1], $scope.coords[0]),
+                marker = new google.maps.Marker({
+                    map: map,
+                    position: new google.maps.LatLng(coords[1], coords[0]),
                     title: info.name,
                     id: info.id
                 });
 
-                $scope.createInfoWindow(info, 'marker', false);
+                id = "'" + info.id + "'";
 
+                //create InfoWindow String
+                string = '<div class="infoWindowContent">' +
+                    '<h3>' + info.name + '</h3>' +
+                    '<p> Opening Date: <span>' + $filter('date')(info.openingDate, 'M/d/yyyy') + '</span></p>' +
+                    '<p> Level: <span>' + info.levelName + '</span></p>' +
+                    '<p> Display name: <span>' + info.displayName + '</span></p>' +
+                    '<p> Short name: <span>' + info.shortName + '</span></p>' +
+                    '<div class="infoWindowContent"><button type="button" class="btn btn-primary" ng-click="open(' + id + ')">Edit</button>' +
+                    '</div>';
+
+                //Compile in order to get into angular scope
+                $btn = $compile(string)($scope);
+
+                //add Click listener
+                google.maps.event.addListener(marker, 'click', (function(content) {
+                    return function() {
+                        infoWindow.setContent(content);
+                        infoWindow.open(map, this);
+                        infoWindow['id'] = info.id;
+                    }
+                })($btn[0]));
+
+                //push in the markers array if its only 1 marker clicked
                 if (flag) {
-                    $scope.markers.push($scope.marker);
+                    markers.push(marker);
                 }
             };
 
-                $scope.polygons = [];
+            //Create Polygon
+            createPolygon = function(info, flag) {
 
-                $scope.createPolygon = function(info, flag) {
+                //remove markers if other clicked
+                if (marker) {
+                    marker.setMap(null);
+                }
 
-                    if ($scope.marker) {
-                        $scope.marker.setMap(null);
+                var coordInfo = [];
+
+                //Get the coordinates and create an array
+                coords = info.coordinates.replace(/[^0-9\-.,]+/g,"").split(',');
+                for (var i = 0; i < coords.length; i++) {
+                    if ( i % 2 == 0) {
+                        coordInfo.push({lat: parseFloat(coords[i + 1]), lng: parseFloat(coords[i])});
                     }
+                }
 
-                    $scope.coordInfo = [];
-                    $scope.bounds = new google.maps.LatLngBounds();
 
-                    //Get the coordinates and create an array
-                    $scope.coords = info.coordinates.replace(/[^0-9\-.,]+/g,"").split(',');
-                    for (var i = 0; i < $scope.coords.length; i++) {
-                        if ( i % 2 == 0) {
-                            $scope.coordInfo.push({lat: parseFloat($scope.coords[i + 1]), lng: parseFloat($scope.coords[i])});
-                        }
+                polygon = new google.maps.Polygon({
+                    paths: coordInfo,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35,
+                    id: info.id
+                });
+
+                polygon.setMap(map);
+                polygon['level_name'] = info.levelName;
+
+                map.setZoom(8);
+                map.setCenter({lat: coordInfo[0].lat, lng: coordInfo[0].lng});
+
+                id = "'" + info.id + "'";
+
+                //create String
+                string = '<div class="infoWindowContent">' +
+                    '<h3>' + info.name + '</h3>' +
+                    '<p> Opening Date: <span>' + $filter('date')(info.openingDate, 'M/d/yyyy') + '</span></p>' +
+                    '<p> Level: <span>' + info.levelName + '</span></p>' +
+                    '<p> Display name: <span>' + info.displayName + '</span></p>' +
+                    '<p> Short name: <span>' + info.shortName + '</span></p>' +
+                    '<div class="infoWindowContent"><button type="button" class="btn btn-primary" ng-click="open(' + id + ')">Edit</button>' +
+                    '</div>';
+
+
+                //Compile in order to get into angular scope
+                $btn = $compile(string)($scope);
+
+                //add click listener to open infowindow anyplace clicked
+                polygon.addListener('click', function(e) {
+                    infoWindow.setContent($btn[0]);
+                    infoWindow.setPosition(e.latLng);
+                    infoWindow.open(map);
+                    infoWindow['id'] = info.id;
+                });
+
+                google.maps.event.addListener(polygon, 'click', (function(content) {
+                    return function() {
+                        infoWindow.setContent(content);
+                        infoWindow.open(map, this);
+                        infoWindow['id'] = info.id;
                     }
+                })($btn[0]));
 
-                
-                    $scope.polygon = new google.maps.Polygon({
-                        paths: $scope.coordInfo,
-                        strokeColor: '#FF0000',
-                        strokeOpacity: 0.8,
-                        strokeWeight: 2,
-                        fillColor: '#FF0000',
-                        fillOpacity: 0.35,
-                        id: info.id
-                    });
-
-                    $scope.polygon.setMap($scope.map);
-                    $scope.polygon['level_name'] = info.levelName;
-
-                    $scope.map.setZoom(8);
-                    $scope.map.setCenter({lat: $scope.coordInfo[0].lat, lng: $scope.coordInfo[0].lng});
-
-                    $scope.createInfoWindow(info, 'polygon', false);
-
-                    if (flag) {
-                        $scope.polygons.push($scope.polygon);
-                    }
-                };
+                // push in the array of polygons if more polygons fetched
+                if (flag) {
+                    polygons.push(polygon);
+                }
+            };
 
             $scope.Units = orgUnits.getOrgUnits(function(data) {
 
                     $scope.orgUnits = data;
-                    $scope.orgUnitId = [];
+                    var orgUnitId = [];
                     for (var i = 0; i < $scope.orgUnits.organisationUnits.length; i++) {
                         //Iterate and get each unit one by one
-                        $scope.orgUnitId.push(orgUnits.orgUnit().get({id: $scope.orgUnits.organisationUnits[i].id}).$promise);
+                        orgUnitId.push(orgUnits.orgUnit().get({id: $scope.orgUnits.organisationUnits[i].id}).$promise);
                     }
 
                     //Instansiate the shared variable
                     $scope.allUnits = SharedVariables;
-
-                    //$scope.allUnits = changeUnits;
-                    //$scope.allUnits = [];
                         
                     //Wait until the data is fetched from the db
-                    $q.all($scope.orgUnitId).then(function(units) {
+                    $q.all(orgUnitId).then(function(units) {
                         //TODO reusable part
-                        $scope.Levels = orgUnits.getLevels(function(data) {
-                            $scope.levels = [];
+                        var Levels = orgUnits.getLevels(function(data) {
 
                             for (var i = 0; i < data.organisationUnitLevels.length; i++) {
 
                                 //Iterate and get each unit one by one, put into levelNames array
-                                //$scope.levelNames.push($scope.levels.organisationUnitLevels[i]);
-                                $scope.levels.push(orgUnits.getLevel().get({id: data.organisationUnitLevels[i].id}).$promise);
+                                levels.push(orgUnits.getLevel().get({id: data.organisationUnitLevels[i].id}).$promise);
                             }
 
                             $scope.allLevels = [];
-                            $q.all($scope.levels).then(function(levels) {
+                            $q.all(levels).then(function(levels) {
                                 for (var i = 0; i < levels.length; i++) {
                                     $scope.allLevels.push(levels[i]);
                                 }
                                 for (var x = 0; x < units.length; x++) {
+                                    //check for coordinates and featuretype, its a big in the DB
                                     if (!angular.isUndefined(units[x].coordinates) && units[x].featureType !== 'NONE')
                                     {
                                         for (var i = 0; i < $scope.allLevels.length; i ++) {
@@ -294,109 +314,92 @@
 
                                 }
 
-
+                                //set the searchUnits for the autocompleter
                                 $scope.searchUnits = $scope.allUnits;
 
-                                $scope.$watch(function() {
-                                    return changeUnits.update();
-                                }, function(newVal, oldVal) {
-                                    if (newVal.length > 0){
-                                        $scope.allUnits = newVal;
-                                        $scope.searchUnits = $scope.allUnits;
-                                        $rootScope.$broadcast('search-change', $scope.searchUnits);
-                                        for (var i = 0; i < $scope.allUnits.length; i++) {
-                                            if ($scope.infoWindow.id == $scope.allUnits[i].id) {
-                                                if ($scope.allUnits[i].featureType == 'POINT')
-                                                    $scope.createInfoWindow($scope.allUnits[i], 'marker',  true);
-                                                else
-                                                    $scope.createInfoWindow($scope.allUnits[i], 'polygon', true);
-                                            }
-                                        }
-                                    }
-                                }, true);
-
+                                //select Unit and create either marker or polygon
                                 $scope.unitSelected = function(selected) {
                                     if (selected) {
                                         for (var i = 0; i < $scope.allUnits.length; i++) {
+                                            //check if titles are the same to show the result
                                             if ($scope.allUnits[i].name === selected.title) {
                                                 if ($scope.allUnits[i].featureType === 'POINT') {
-                                                    $scope.createMarker($scope.allUnits[i], false);
+                                                    createMarker($scope.allUnits[i], false);
                                                 }
                                                 else if ($scope.allUnits[i].featureType === 'POLYGON' || $scope.allUnits[i].featureType === 'MULTI_POLYGON') {
-                                                    if ($scope.polygon)
-                                                        $scope.polygon.setMap(null);
+                                                    if (polygon)
+                                                        polygon.setMap(null);
 
-                                                    $scope.createPolygon($scope.allUnits[i], false);
+                                                    createPolygon($scope.allUnits[i], false);
                                                 }
                                             }
                                         }
                                     }
                                 }
-
+                                //show all Facilities
                                 $scope.allFacilities = function() {
                                     $scope.clicked = !$scope.clicked;
                                     if ($scope.clicked) {
                                         if (!$scope.mc){
                                             for (var i = 0; i < $scope.allUnits.length; i++) {
                                                 if ($scope.allUnits[i].levelName === 'Facility') {
-                                                    $scope.createMarker($scope.allUnits[i], true);
+                                                    createMarker($scope.allUnits[i], true);
                                                 }
                                             }
-                                            $scope.map.setZoom(8);
-
-                                            $scope.mc = new MarkerClusterer($scope.map, $scope.markers, {
+                                            $scope.mc = new MarkerClusterer(map, markers, {
                                                 maxZoom: 14
                                             });
                                         }
                                         else {
-                                            $scope.mc.addMarkers($scope.markers);
+                                            $scope.mc.addMarkers(markers);
                                         }
                                     }
                                     else {
-                                        if ($scope.markers.length > 0) {
-                                            $scope.mc.removeMarkers($scope.markers);
+                                        if (markers.length > 0) {
+                                            $scope.mc.removeMarkers(markers);
                                         }
                                     }
                                 }
 
+                                //Show all Chiefdoms
                                 $scope.allChiefdoms = function() {
                                     $scope.cclicked = !$scope.cclicked;
                                     if ($scope.cclicked) {
-                                        if ($scope.polygon)
-                                            $scope.polygon.setMap(null);
+                                        if (polygon)
+                                            polygon.setMap(null);
                                         for (var i = 0; i < $scope.allUnits.length; i++) {
                                             if ($scope.allUnits[i].levelName === 'Chiefdom') {
-                                                $scope.createPolygon($scope.allUnits[i], true);
+                                                createPolygon($scope.allUnits[i], true);
                                             }
                                         }
-                                        $scope.polName = 'Chiefdom';
                                     }
                                     else
                                     {
-                                        for (var i = 0; i < $scope.polygons.length; i ++) {
-                                            if ($scope.polygons[i].level_name === 'Chiefdom')
-                                                $scope.polygons[i].setMap(null);
+                                        for (var i = 0; i < polygons.length; i ++) {
+                                            if (polygons[i].level_name === 'Chiefdom')
+                                                polygons[i].setMap(null);
                                         }
-                                        $scope.polygon.length = 0;
+                                        polygon.length = 0;
                                     }
                                 }
 
+                                //Show all Districts
                                 $scope.allDistricts = function() {
                                     $scope.dclicked = !$scope.dclicked;
                                     if ($scope.dclicked) {
                                         for (var i = 0; i < $scope.allUnits.length; i++) {
                                             if ($scope.allUnits[i].levelName === 'District') {
-                                                $scope.createPolygon($scope.allUnits[i], true);
+                                                createPolygon($scope.allUnits[i], true);
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        for (var i = 0; i < $scope.polygons.length; i ++) {
-                                            if ($scope.polygons[i].level_name === 'District')
-                                                $scope.polygons[i].setMap(null);
+                                        for (var i = 0; i < polygons.length; i ++) {
+                                            if (polygons[i].level_name === 'District')
+                                                polygons[i].setMap(null);
                                         }
-                                        $scope.polygon.length = 0;
+                                        polygon.length = 0;
 
                                     }
 
@@ -424,25 +427,22 @@
 
 
                         // Initialize the listener for the add facility functionality
-
-                        google.maps.event.addListener($scope.map, "rightclick",function(event){
-
+                        google.maps.event.addListener(map, "rightclick",function(event){
                             showContextMenu(event.latLng);
-
                         });
 
                         //TODO improve this part
                         //remove menu if dragged, clicked somewhere or zoomed
 
-                        google.maps.event.addListener($scope.map, 'click', function() {
+                        google.maps.event.addListener(map, 'click', function() {
                             $('.contextmenu').remove();
                         });
 
-                        google.maps.event.addListener($scope.map, 'dragstart', function() {
+                        google.maps.event.addListener(map, 'dragstart', function() {
                             $('.contextmenu').remove();
                         });
 
-                        google.maps.event.addListener($scope.map, 'zoom_changed', function() {
+                        google.maps.event.addListener(map, 'zoom_changed', function() {
                             $('.contextmenu').remove();
                         });
 
@@ -450,13 +450,13 @@
                             var projection;
                             var contextmenuDir;
                             var latLng = "'" + currentLatLng + "'";
-                            projection = $scope.map.getProjection() ;
+                            projection = map.getProjection() ;
                             $('.contextmenu').remove();
                             contextmenuDir = document.createElement("div");
                             contextmenuDir.className  = 'contextmenu';
                             var string = '<ul class="add-menu"><li ng-click="addUnit(' + latLng + ')">Add Organisation Unit</li></ul>';
                             contextmenuDir.appendChild($compile(string)($scope)[0]);
-                            $($scope.map.getDiv()).append(contextmenuDir);
+                            $(map.getDiv()).append(contextmenuDir);
 
                             setMenuXY(currentLatLng);
 
@@ -467,33 +467,40 @@
                         $scope.addUnit = function(latlng) {
                             $scope.latlng = latlng.replace(/[^0-9\-.,]+/g,"").split(',');
                             googleMaps.checkCountry().get({lat: $scope.latlng[0], long: $scope.latlng[1]}).$promise.then(function(data) {
-                                for (var i = 0; i < data.results[0].address_components.length; i++) {
-                                    for (var x = 0; x < data.results[0].address_components[i].types.length; x++) {
-                                        if (data.results[0].address_components[i].types[x] === 'country') {
-                                            $scope.countryCode = data.results[0].address_components[i].short_name;
-                                        }
-                                    }
-                                }
-                                if ($scope.countryCode === 'SL') {
-
-                                    $scope.newMarker = new google.maps.Marker({
-                                        map: $scope.map,
-                                        position: new google.maps.LatLng($scope.latlng[0], $scope.latlng[1])
-                                    });
-
-
-                                    // This will invoke a popup with form from the html script "addUnitContent.html" specified in index.html
-
-                                    $uibModal.open({
-                                        animation: true,
-                                        templateUrl: 'addUnitContent.html',
-                                        controller: 'AddUnitController',
-                                        resolve: {
-                                            marker: function() {
-                                                return $scope.newMarker;
+                                if (data.results.length)
+                                {
+                                    for (var i = 0; i < data.results[0].address_components.length; i++) {
+                                        for (var x = 0; x < data.results[0].address_components[i].types.length; x++) {
+                                            if (data.results[0].address_components[i].types[x] === 'country') {
+                                                $scope.countryCode = data.results[0].address_components[i].short_name;
                                             }
                                         }
-                                    });
+                                    }
+                                    if ($scope.countryCode === 'SL') {
+
+                                        $scope.newMarker = new google.maps.Marker({
+                                            map: map,
+                                            position: new google.maps.LatLng($scope.latlng[0], $scope.latlng[1])
+                                        });
+
+
+                                        // This will invoke a popup with form from the html script "addUnitContent.html" specified in index.html
+
+                                        $uibModal.open({
+                                            animation: true,
+                                            templateUrl: 'addUnitContent.html',
+                                            controller: 'AddUnitController',
+                                            resolve: {
+                                                marker: function() {
+                                                    return $scope.newMarker;
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        alert('Please add only in Sierra Leone');
+                                        $('.contextmenu').remove();
+                                    }
                                 }
                                 else {
                                     alert('Please add only in Sierra Leone');
@@ -504,13 +511,13 @@
                         };
 
                         function getCanvasXY(currentLatLng){
-                            var scale = Math.pow(2, $scope.map.getZoom());
+                            var scale = Math.pow(2, map.getZoom());
                             var nw = new google.maps.LatLng(
-                                $scope.map.getBounds().getNorthEast().lat(),
-                                $scope.map.getBounds().getSouthWest().lng()
+                                map.getBounds().getNorthEast().lat(),
+                                map.getBounds().getSouthWest().lng()
                             );
-                            var worldCoordinateNW = $scope.map.getProjection().fromLatLngToPoint(nw);
-                            var worldCoordinate = $scope.map.getProjection().fromLatLngToPoint(currentLatLng);
+                            var worldCoordinateNW = map.getProjection().fromLatLngToPoint(nw);
+                            var worldCoordinate = map.getProjection().fromLatLngToPoint(currentLatLng);
                             var caurrentLatLngOffset = new google.maps.Point(
                                 Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale),
                                 Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale)
@@ -536,10 +543,30 @@
                             $('.contextmenu').css('top',y);
                         };
 
-                        google.maps.event.trigger($scope.map, "resize");
+                        google.maps.event.trigger(map, "resize");
 
                     })
             });
+
+            //watch for updates
+            $scope.$watch(function() {
+                return changeUnits.update();
+            }, function(newVal, oldVal) {
+                if (newVal.length > 0){
+                    $scope.allUnits = newVal;
+                    $scope.searchUnits = $scope.allUnits;
+                    $rootScope.$broadcast('search-change', $scope.searchUnits);
+                    for (var i = 0; i < $scope.allUnits.length; i++) {
+                        if (infoWindow.id == $scope.allUnits[i].id) {
+                            if ($scope.allUnits[i].featureType == 'POINT')
+                                createInfoWindow($scope.allUnits[i], 'marker');
+                            else
+                                createInfoWindow($scope.allUnits[i], 'polygon');
+                        }
+                    }
+
+                }
+            }, true);
 
 
                 // Filter
@@ -564,27 +591,30 @@
         // Controller for editing existing facilities
 
         .controller('EditUnitController', function($scope, $uibModalInstance, id, orgUnits, changeUnits, $rootScope, SharedVariables, $filter) {
+            var units, edittedUnit;
             $scope.updateUnit = function(unit) {
-                $scope.sent = false;
-                $scope.edittedUnit = angular.copy(unit);
-                $scope.units = SharedVariables;
+                //copy the unit in other object
+                edittedUnit = angular.copy(unit);
+                units = SharedVariables;
                 $scope.editUnit.$update(function() {}).then(function(success) {
                     if (success.httpStatusCode == 200) {
-                        for (var i = 0; i < $scope.units.length; i ++)
+                        for (var i = 0; i < units.length; i ++)
                         {
-                            if ($scope.units[i].id == id) {
-                                if ($scope.edittedUnit.name) {
-                                    $scope.units[i].name = $scope.edittedUnit.name;
-                                    $scope.units[i].displayName = $scope.edittedUnit.name;
+                            if (units[i].id == id) {
+                                if (edittedUnit.name) {
+                                    units[i].name = edittedUnit.name;
+                                    units[i].displayName = edittedUnit.name;
                                 }
 
-                                if ($scope.edittedUnit.shortName)
-                                    $scope.units[i].shortName = $scope.edittedUnit.shortName;
-                                if ($scope.edittedUnit.openingDate)
-                                    $scope.units[i].openingDate = $filter('date')($scope.edittedUnit.openingDate, 'M/d/yyyy');
+                                if (edittedUnit.shortName)
+                                    units[i].shortName = edittedUnit.shortName;
+                                if (edittedUnit.openingDate)
+                                    units[i].openingDate = $filter('date')(edittedUnit.openingDate, 'M/d/yyyy');
                             }
                         }
-                        changeUnits.set($scope.units);
+
+                        //send to factory to watch
+                        changeUnits.set(units);
                     }
                 });
                 $uibModalInstance.dismiss('cancel');
@@ -600,42 +630,36 @@
             $uibModalInstance.dismiss('cancel');
         }
     })
-
-
-
-
         //Controller for adding new facilities
 
         .controller('AddUnitController', function($scope, SharedVariables, $uibModalInstance, marker, orgUnitss, changeUnits, orgUnits) {  //Add addUnits?
 
-           //Shared variable, defined in .factory.
-            $scope.allUnits = SharedVariables;
+            var allUnits, position, addedID;
 
+           //Shared variable, defined in .factory.
+            allUnits = SharedVariables;
+           $scope.allLevel3Units = [];
             //Fetch all parents (level 3 units) from the shared array and save to $scope.allLevel3Units
-            $scope.allLevel3Units=[];
-            for (var i = 0; i < $scope.allUnits.length; i++) {
-                if ($scope.allUnits[i].level == 3) {
-                    $scope.allLevel3Units.push($scope.allUnits[i]);
+            for (var i = 0; i < allUnits.length; i++) {
+                if (allUnits[i].level == 3) {
+                    $scope.allLevel3Units.push(allUnits[i]);
                 }
             }
 
             //Initialise dropdown list with item in index 0
             $scope.selectedParent = $scope.allLevel3Units[0];
 
-
-          
             //Get the coordinates of the selected marker
-            $scope.position = marker.getPosition();
+            position = marker.getPosition();
 
-            $scope.lat = $scope.position.lat();
-            $scope.lng = $scope.position.lng();
+            $scope.lat = position.lat();
+            $scope.lng = position.lng();
 
             //Assign parent and coordinates to the given facility
             $scope.addFacility = {
                 parent:{"id": $scope.selectedParent.id, "name": $scope.selectedParent.name},
                 featureType:"POINT",
-                coordinates:"[" + $scope.lng+ "," + $scope.lat + "]",
-
+                coordinates:"[" + $scope.lng+ "," + $scope.lat + "]"
             };
 
 
@@ -647,45 +671,28 @@
 
 
             // Add a new unit
-
             $scope.addUnit = function() {
-
-
-
-
                 orgUnitss.save($scope.addFacility, function(addedObject) {
 
                         // This is the ID of the recently added object
 
-                        $scope.addedID = addedObject.response.lastImported;
-
-                        // .Debug
-                        console.log($scope.addedID);
-
-                        alert("Create success");
-
+                        addedID = addedObject.response.lastImported;
                         // In order to update the browser in real-time, one has to first fetch the unit from the DB, and then push it to 
                         // the temporary array of all units. After it has been pushed, the main array has to be updated with the temporary one.
 
-                        orgUnits.orgUnit().get({id: $scope.addedID}).$promise.then(function(fetchedFacility) {
+                        orgUnits.orgUnit().get({id: addedID}).$promise.then(function(fetchedFacility) {
 
-                        // .Debug
-                        console.log(fetchedFacility);
-
+                        fetchedFacility['levelName'] = 'Facility';
                          // Push the fetched unit to the temporary array of units
 
-                         $scope.allUnits.push(fetchedFacility);   
+                         allUnits.push(fetchedFacility);
 
                          // Propogate the update of the main array       
-                         changeUnits.set($scope.allUnits);
-
+                         changeUnits.set(allUnits);
+                        $('.contextmenu').remove();
                         });
-
                     }
                 );
-
-                    
-           
                 $uibModalInstance.dismiss('cancel');
             };
 
@@ -695,6 +702,7 @@
             });
 
             $scope.cancel = function() {
+                $('.contextmenu').remove();
                 $uibModalInstance.dismiss('cancel');
                 marker.setMap(null);
             }
