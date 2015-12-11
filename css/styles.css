@@ -178,7 +178,7 @@ input[id="mandatoryField"]:-ms-input-placeholder { /* Internet Explorer 10-11 */
     transition: all 0.4s;
 }
 
-input[type='text'].form-control, input[type='date'] {
+input[type='text'].form-control, input[type='date'], input[type='email'], input[type='url']  {
     border: none;
     box-shadow: none;
     border-bottom: 1px solid #adadad;
@@ -196,11 +196,26 @@ input[type='text'].form-control:focus, input[type='date']:focus {
     -o-transition: all 0.4s;
     transition: all 0.4s;
 }
+
+
 label {
     font-size: 12px;
     color: #888888;
     font-weight: normal;
     font-style: italic;
+}
+
+#addUnitSelectText{
+    font-size: 12px;
+    color: #888888;
+    font-weight: normal;
+    font-style: italic;
+}
+
+#mandatoryField {
+    background:transparent;
+    border:none;
+    border-bottom: 1px solid #adadad;   
 }
 
 .modal-content {

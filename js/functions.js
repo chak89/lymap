@@ -4,11 +4,13 @@
     app
         .factory('orgUnits', function($http, $resource) {
             return {
-                //get All OrganisationUnits
+                // Retrieve all organisational units
+
                 getOrgUnits: function(callback) {
                     $http.get('http://localhost:8080/api/organisationUnits.json?paging=false&links=false').success(callback);
                 },
-                //Get/Update/Delete OrganisationUnits by their ID
+                // Perform update on unit based on id
+
                 orgUnit: function() {
                     return $resource('http://localhost:8080/api/organisationUnits/:id', {id: '@id'}, {
                         update: {
@@ -50,10 +52,26 @@
         })
 
 
-        //Shared Variable between mapController and AddUnitController
+        // Shared Variable between mapController and AddUnitController
+
         .factory('SharedVariables', function () {
             var allUnits = [];
             return allUnits;
+        })
+
+        // Fetching indiviual facilities
+
+        .factory('fetchUnit', function($resource) {
+
+                return { 
+
+            get: function () {
+                    return $resource('http://localhost:8080/api/organisationUnits/:id', {id: '@id'}, {
+                        method: 'GET'
+                        
+                    });
+                }
+            }
         })
 
         .service('changeUnits', function() {
@@ -74,7 +92,7 @@
 
             $scope.loader = document.getElementById('loader');
 
-            //Set map options
+            // Set map options
             $scope.mapOptions = {
                 zoom: 8,
                 center: new google.maps.LatLng(9.0131, -12.9487),
@@ -588,7 +606,7 @@
 
         //Controller for adding new facilities
 
-        .controller('AddUnitController', function($scope, SharedVariables, $uibModalInstance, marker, orgUnitss, changeUnits) {  //Add addUnits?
+        .controller('AddUnitController', function($scope, SharedVariables, $uibModalInstance, marker, orgUnitss, changeUnits, orgUnits) {  //Add addUnits?
 
            //Shared variable, defined in .factory.
             $scope.allUnits = SharedVariables;
@@ -628,26 +646,46 @@
             };
 
 
+            // Add a new unit
+
             $scope.addUnit = function() {
 
-                orgUnitss.create( $scope.addFacility).$promise.then(
-                //success
-                function(value){
-                    alert("Create success");
 
-                    // Hichael in progress: Updating units so that the added units shows up in search bar
 
-                    console.log($scope.addFacility)
-                    $scope.allUnits.push($scope.addFacility);                
-                    changeUnits.set($scope.allUnits);
 
-                    $scope.addFacility=[];
-                    
-                },
-                //error
-                function(error){
-                    alert("Create failed");}
+                orgUnitss.save($scope.addFacility, function(addedObject) {
+
+                        // This is the ID of the recently added object
+
+                        $scope.addedID = addedObject.response.lastImported;
+
+                        // .Debug
+                        console.log($scope.addedID);
+
+                        alert("Create success");
+
+                        // In order to update the browser in real-time, one has to first fetch the unit from the DB, and then push it to 
+                        // the temporary array of all units. After it has been pushed, the main array has to be updated with the temporary one.
+
+                        orgUnits.orgUnit().get({id: $scope.addedID}).$promise.then(function(fetchedFacility) {
+
+                        // .Debug
+                        console.log(fetchedFacility);
+
+                         // Push the fetched unit to the temporary array of units
+
+                         $scope.allUnits.push(fetchedFacility);   
+
+                         // Propogate the update of the main array       
+                         changeUnits.set($scope.allUnits);
+
+                        });
+
+                    }
                 );
+
+                    
+           
                 $uibModalInstance.dismiss('cancel');
             };
 
