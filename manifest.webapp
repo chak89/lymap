@@ -14,7 +14,7 @@
 	},
 	"activities":{
 		"dhis":{
-			"href":"http://localhost:8080","namespace":null
+			"href":"*","namespace":null
 		}
 	},
 	"folderName":null,
@@ -23,4 +23,5 @@
 	"key":null,
 	"launch_path":"/index.html",
 	"installs_allowed_from":null,
-	"default_locale":"en"}
+	"default_locale":"en"
+	}

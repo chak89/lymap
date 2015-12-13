@@ -1,17 +1,21 @@
 (function () {
     var app = angular.module('lymap', ['ngResource', 'angucomplete-alt', 'ngAnimate', 'ui.bootstrap']);
+    var baseUrl;
 
     app
         .factory('orgUnits', function($http, $resource) {
             return {
+                getManifest: function(callback) {
+                    $http.get('manifest.webapp').success(callback);
+                },
                 // Retrieve all organisational units
                 getOrgUnits: function(callback) {
-                    $http.get('http://localhost:8080/api/organisationUnits.json?paging=false&links=false').success(callback);
+                    $http.get( baseUrl + '/organisationUnits.json?paging=false&links=false').success(callback);
                 },
                 // Perform update on unit based on id
 
                 orgUnit: function() {
-                    return $resource('http://localhost:8080/api/organisationUnits/:id', {id: '@id'}, {
+                    return $resource(baseUrl + '/organisationUnits/:id', {id: '@id'}, {
                         update: {
                             method: 'PUT'
                         }
@@ -19,30 +23,29 @@
                 },
 
                 getLevels: function(returnedData) {
-                    $http.get('http://localhost:8080/api/organisationUnitLevels.json?paging=false&links=false').success(returnedData);
+                    $http.get( baseUrl + '/organisationUnitLevels.json?paging=false&links=false').success(returnedData);
                 },
 
                 getLevel: function() {
-                    return $resource('http://localhost:8080/api/organisationUnitLevels/:id', {name: '@id'}, {
+                    return $resource( baseUrl + '/organisationUnitLevels/:id', {name: '@id'}, {
                         method: 'GET',
                         isArray: true
                     });
+                },
+                createUnit: function() {
+                    return $resource( baseUrl + '/organisationUnits', {}, {
+                        create: {method: 'POST'}
+                    })
                 }
         };
 
     })
 
-        .factory('orgUnitss', function($resource) {
-            return $resource('http://localhost:8080/api/organisationUnits', {}, {
-                create: {method: 'POST'}
-            })
-        })
-
         .factory('googleMaps', function($resource) {
             return {
                 //check country
                 checkCountry: function() {
-                    return $resource('http://maps.googleapis.com/maps/api/geocode/json?latlng=:lat,:long&sensor=false', {lat: '@lat', long: '@long'}, {
+                    return $resource('https://maps.googleapis.com/maps/api/geocode/json?latlng=:lat,:long&sensor=false', {lat: '@lat', long: '@long'}, {
                         method: 'GET',
                         isArray: true
                     });
@@ -72,10 +75,15 @@
             }
         })
 
-        .controller('mapController', function($scope, $rootScope, changeUnits, SharedVariables,$http, $location, orgUnits,orgUnitss, $q, $window, $uibModal, $compile, googleMaps, $filter) {
+        .controller('mapController', function($scope, $rootScope, changeUnits, SharedVariables,$http, $location, orgUnits, $q, $window, $uibModal, $compile, googleMaps, $filter) {
 
             // initialize variables
             var map, id, string, $btn, content, infoWindow, marker, polygon, coords, createInfoWindow, createMarker, createPolygon;
+
+            orgUnits.getManifest(function(data) {
+                baseUrl = data.activities.dhis.href + "/api";
+                initUnits();
+            });
 
             $scope.loader = document.getElementById('loader');
 
@@ -271,7 +279,8 @@
                 }
             };
 
-            $scope.Units = orgUnits.getOrgUnits(function(data) {
+            function initUnits() {
+                $scope.Units = orgUnits.getOrgUnits(function(data) {
 
                     $scope.orgUnits = data;
                     var orgUnitId = [];
@@ -317,93 +326,7 @@
                                 //set the searchUnits for the autocompleter
                                 $scope.searchUnits = $scope.allUnits;
 
-                                //select Unit and create either marker or polygon
-                                $scope.unitSelected = function(selected) {
-                                    if (selected) {
-                                        for (var i = 0; i < $scope.allUnits.length; i++) {
-                                            //check if titles are the same to show the result
-                                            if ($scope.allUnits[i].name === selected.title) {
-                                                if ($scope.allUnits[i].featureType === 'POINT') {
-                                                    createMarker($scope.allUnits[i], false);
-                                                }
-                                                else if ($scope.allUnits[i].featureType === 'POLYGON' || $scope.allUnits[i].featureType === 'MULTI_POLYGON') {
-                                                    if (polygon)
-                                                        polygon.setMap(null);
 
-                                                    createPolygon($scope.allUnits[i], false);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                //show all Facilities
-                                $scope.allFacilities = function() {
-                                    $scope.clicked = !$scope.clicked;
-                                    if ($scope.clicked) {
-                                        if (!$scope.mc){
-                                            for (var i = 0; i < $scope.allUnits.length; i++) {
-                                                if ($scope.allUnits[i].levelName === 'Facility') {
-                                                    createMarker($scope.allUnits[i], true);
-                                                }
-                                            }
-                                            $scope.mc = new MarkerClusterer(map, markers, {
-                                                maxZoom: 14
-                                            });
-                                        }
-                                        else {
-                                            $scope.mc.addMarkers(markers);
-                                        }
-                                    }
-                                    else {
-                                        if (markers.length > 0) {
-                                            $scope.mc.removeMarkers(markers);
-                                        }
-                                    }
-                                }
-
-                                //Show all Chiefdoms
-                                $scope.allChiefdoms = function() {
-                                    $scope.cclicked = !$scope.cclicked;
-                                    if ($scope.cclicked) {
-                                        if (polygon)
-                                            polygon.setMap(null);
-                                        for (var i = 0; i < $scope.allUnits.length; i++) {
-                                            if ($scope.allUnits[i].levelName === 'Chiefdom') {
-                                                createPolygon($scope.allUnits[i], true);
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        for (var i = 0; i < polygons.length; i ++) {
-                                            if (polygons[i].level_name === 'Chiefdom')
-                                                polygons[i].setMap(null);
-                                        }
-                                        polygon.length = 0;
-                                    }
-                                }
-
-                                //Show all Districts
-                                $scope.allDistricts = function() {
-                                    $scope.dclicked = !$scope.dclicked;
-                                    if ($scope.dclicked) {
-                                        for (var i = 0; i < $scope.allUnits.length; i++) {
-                                            if ($scope.allUnits[i].levelName === 'District') {
-                                                createPolygon($scope.allUnits[i], true);
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        for (var i = 0; i < polygons.length; i ++) {
-                                            if (polygons[i].level_name === 'District')
-                                                polygons[i].setMap(null);
-                                        }
-                                        polygon.length = 0;
-
-                                    }
-
-                                }
 
                                 // hide loader when all the data is fetched and filtered
                                 $scope.loader.className = "hide"
@@ -411,142 +334,237 @@
                         });
                         
 
-                        //Modal editUnit
-                        $scope.open = function(id) {
-                            $uibModal.open({
-                                animation: true,
-                                templateUrl: 'editUnitContent.html',
-                                controller: 'EditUnitController',
-                                resolve: {
-                                    id: function () {
-                                        return id;
-                                    }
-                                }
-                            });
-                        };
 
-
-                        // Initialize the listener for the add facility functionality
-                        google.maps.event.addListener(map, "rightclick",function(event){
-                            showContextMenu(event.latLng);
-                        });
-
-                        //TODO improve this part
-                        //remove menu if dragged, clicked somewhere or zoomed
-
-                        google.maps.event.addListener(map, 'click', function() {
-                            $('.contextmenu').remove();
-                        });
-
-                        google.maps.event.addListener(map, 'dragstart', function() {
-                            $('.contextmenu').remove();
-                        });
-
-                        google.maps.event.addListener(map, 'zoom_changed', function() {
-                            $('.contextmenu').remove();
-                        });
-
-                        function showContextMenu(currentLatLng) {
-                            var projection;
-                            var contextmenuDir;
-                            var latLng = "'" + currentLatLng + "'";
-                            projection = map.getProjection() ;
-                            $('.contextmenu').remove();
-                            contextmenuDir = document.createElement("div");
-                            contextmenuDir.className  = 'contextmenu';
-                            var string = '<ul class="add-menu"><li ng-click="addUnit(' + latLng + ')">Add Organisation Unit</li></ul>';
-                            contextmenuDir.appendChild($compile(string)($scope)[0]);
-                            $(map.getDiv()).append(contextmenuDir);
-
-                            setMenuXY(currentLatLng);
-
-                            contextmenuDir.style.visibility = "visible";
-                        }
-
-                        //Add Unit
-                        $scope.addUnit = function(latlng) {
-                            $scope.latlng = latlng.replace(/[^0-9\-.,]+/g,"").split(',');
-                            googleMaps.checkCountry().get({lat: $scope.latlng[0], long: $scope.latlng[1]}).$promise.then(function(data) {
-                                if (data.results.length)
-                                {
-                                    for (var i = 0; i < data.results[0].address_components.length; i++) {
-                                        for (var x = 0; x < data.results[0].address_components[i].types.length; x++) {
-                                            if (data.results[0].address_components[i].types[x] === 'country') {
-                                                $scope.countryCode = data.results[0].address_components[i].short_name;
-                                            }
-                                        }
-                                    }
-                                    if ($scope.countryCode === 'SL') {
-
-                                        $scope.newMarker = new google.maps.Marker({
-                                            map: map,
-                                            position: new google.maps.LatLng($scope.latlng[0], $scope.latlng[1])
-                                        });
-
-
-                                        // This will invoke a popup with form from the html script "addUnitContent.html" specified in index.html
-
-                                        $uibModal.open({
-                                            animation: true,
-                                            templateUrl: 'addUnitContent.html',
-                                            controller: 'AddUnitController',
-                                            resolve: {
-                                                marker: function() {
-                                                    return $scope.newMarker;
-                                                }
-                                            }
-                                        });
-                                    }
-                                    else {
-                                        alert('Please add only in Sierra Leone');
-                                        $('.contextmenu').remove();
-                                    }
-                                }
-                                else {
-                                    alert('Please add only in Sierra Leone');
-                                    $('.contextmenu').remove();
-                                }
-                            });
-
-                        };
-
-                        function getCanvasXY(currentLatLng){
-                            var scale = Math.pow(2, map.getZoom());
-                            var nw = new google.maps.LatLng(
-                                map.getBounds().getNorthEast().lat(),
-                                map.getBounds().getSouthWest().lng()
-                            );
-                            var worldCoordinateNW = map.getProjection().fromLatLngToPoint(nw);
-                            var worldCoordinate = map.getProjection().fromLatLngToPoint(currentLatLng);
-                            var caurrentLatLngOffset = new google.maps.Point(
-                                Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale),
-                                Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale)
-                            );
-                            return caurrentLatLngOffset;
-                        }
-
-                        function setMenuXY(currentLatLng){
-                            var mapWidth = $('#map').width();
-                            var mapHeight = $('#map').height();
-                            var menuWidth = $('.contextmenu').width();
-                            var menuHeight = $('.contextmenu').height();
-                            var clickedPosition = getCanvasXY(currentLatLng);
-                            var x = clickedPosition.x ;
-                            var y = clickedPosition.y ;
-
-                            if((mapWidth - x ) < menuWidth) //if to close to the map border, decrease x position
-                                x = x - menuWidth;
-                            if((mapHeight - y ) < menuHeight) //if to close to the map border, decrease y position
-                                y = y - menuHeight;
-
-                            $('.contextmenu').css('left',x);
-                            $('.contextmenu').css('top',y);
-                        };
-
-                        google.maps.event.trigger(map, "resize");
 
                     })
+                });
+            }
+
+
+            //Modal editUnit
+            $scope.open = function(id) {
+                $uibModal.open({
+                    animation: true,
+                    templateUrl: 'editUnitContent.html',
+                    controller: 'EditUnitController',
+                    resolve: {
+                        id: function () {
+                            return id;
+                        }
+                    }
+                });
+            };
+
+
+            // Initialize the listener for the add facility functionality
+            google.maps.event.addListener(map, "rightclick",function(event){
+                showContextMenu(event.latLng);
             });
+
+            //TODO improve this part
+            //remove menu if dragged, clicked somewhere or zoomed
+
+            google.maps.event.addListener(map, 'click', function() {
+                $('.contextmenu').remove();
+            });
+
+            google.maps.event.addListener(map, 'dragstart', function() {
+                $('.contextmenu').remove();
+            });
+
+            google.maps.event.addListener(map, 'zoom_changed', function() {
+                $('.contextmenu').remove();
+            });
+
+            function showContextMenu(currentLatLng) {
+                var projection;
+                var contextmenuDir;
+                var latLng = "'" + currentLatLng + "'";
+                projection = map.getProjection() ;
+                $('.contextmenu').remove();
+                contextmenuDir = document.createElement("div");
+                contextmenuDir.className  = 'contextmenu';
+                var string = '<ul class="add-menu"><li ng-click="addUnit(' + latLng + ')">Add Organisation Unit</li></ul>';
+                contextmenuDir.appendChild($compile(string)($scope)[0]);
+                $(map.getDiv()).append(contextmenuDir);
+
+                setMenuXY(currentLatLng);
+
+                contextmenuDir.style.visibility = "visible";
+            }
+
+
+
+            function getCanvasXY(currentLatLng){
+                var scale = Math.pow(2, map.getZoom());
+                var nw = new google.maps.LatLng(
+                    map.getBounds().getNorthEast().lat(),
+                    map.getBounds().getSouthWest().lng()
+                );
+                var worldCoordinateNW = map.getProjection().fromLatLngToPoint(nw);
+                var worldCoordinate = map.getProjection().fromLatLngToPoint(currentLatLng);
+                var caurrentLatLngOffset = new google.maps.Point(
+                    Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale),
+                    Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale)
+                );
+                return caurrentLatLngOffset;
+            }
+
+            function setMenuXY(currentLatLng){
+                var mapWidth = $('#map').width();
+                var mapHeight = $('#map').height();
+                var menuWidth = $('.contextmenu').width();
+                var menuHeight = $('.contextmenu').height();
+                var clickedPosition = getCanvasXY(currentLatLng);
+                var x = clickedPosition.x ;
+                var y = clickedPosition.y ;
+
+                if((mapWidth - x ) < menuWidth) //if to close to the map border, decrease x position
+                    x = x - menuWidth;
+                if((mapHeight - y ) < menuHeight) //if to close to the map border, decrease y position
+                    y = y - menuHeight;
+
+                $('.contextmenu').css('left',x);
+                $('.contextmenu').css('top',y);
+            };
+
+            google.maps.event.trigger(map, "resize");
+
+
+            //Add Unit
+            $scope.addUnit = function(latlng) {
+                $scope.latlng = latlng.replace(/[^0-9\-.,]+/g,"").split(',');
+                googleMaps.checkCountry().get({lat: $scope.latlng[0], long: $scope.latlng[1]}).$promise.then(function(data) {
+                    if (data.results.length)
+                    {
+                        for (var i = 0; i < data.results[0].address_components.length; i++) {
+                            for (var x = 0; x < data.results[0].address_components[i].types.length; x++) {
+                                if (data.results[0].address_components[i].types[x] === 'country') {
+                                    $scope.countryCode = data.results[0].address_components[i].short_name;
+                                }
+                            }
+                        }
+                        if ($scope.countryCode === 'SL') {
+
+                            $scope.newMarker = new google.maps.Marker({
+                                map: map,
+                                position: new google.maps.LatLng($scope.latlng[0], $scope.latlng[1])
+                            });
+
+
+                            // This will invoke a popup with form from the html script "addUnitContent.html" specified in index.html
+
+                            $uibModal.open({
+                                animation: true,
+                                templateUrl: 'addUnitContent.html',
+                                controller: 'AddUnitController',
+                                resolve: {
+                                    marker: function() {
+                                        return $scope.newMarker;
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            alert('Please add only in Sierra Leone');
+                            $('.contextmenu').remove();
+                        }
+                    }
+                    else {
+                        alert('Please add only in Sierra Leone');
+                        $('.contextmenu').remove();
+                    }
+                });
+
+            };
+
+            //select Unit and create either marker or polygon
+            $scope.unitSelected = function(selected) {
+                if (selected) {
+                    for (var i = 0; i < $scope.allUnits.length; i++) {
+                        //check if titles are the same to show the result
+                        if ($scope.allUnits[i].name === selected.title) {
+                            if ($scope.allUnits[i].featureType === 'POINT') {
+                                createMarker($scope.allUnits[i], false);
+                            }
+                            else if ($scope.allUnits[i].featureType === 'POLYGON' || $scope.allUnits[i].featureType === 'MULTI_POLYGON') {
+                                if (polygon)
+                                    polygon.setMap(null);
+
+                                createPolygon($scope.allUnits[i], false);
+                            }
+                        }
+                    }
+                }
+            }
+            //show all Facilities
+            $scope.allFacilities = function() {
+                $scope.clicked = !$scope.clicked;
+                if ($scope.clicked) {
+                    if (!$scope.mc){
+                        for (var i = 0; i < $scope.allUnits.length; i++) {
+                            if ($scope.allUnits[i].levelName === 'Facility') {
+                                createMarker($scope.allUnits[i], true);
+                            }
+                        }
+                        $scope.mc = new MarkerClusterer(map, markers, {
+                            maxZoom: 14
+                        });
+                    }
+                    else {
+                        $scope.mc.addMarkers(markers);
+                    }
+                }
+                else {
+                    if (markers.length > 0) {
+                        $scope.mc.removeMarkers(markers);
+                    }
+                }
+            }
+
+            //Show all Chiefdoms
+            $scope.allChiefdoms = function() {
+                $scope.cclicked = !$scope.cclicked;
+                if ($scope.cclicked) {
+                    if (polygon)
+                        polygon.setMap(null);
+                    for (var i = 0; i < $scope.allUnits.length; i++) {
+                        if ($scope.allUnits[i].levelName === 'Chiefdom') {
+                            createPolygon($scope.allUnits[i], true);
+                        }
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < polygons.length; i ++) {
+                        if (polygons[i].level_name === 'Chiefdom')
+                            polygons[i].setMap(null);
+                    }
+                    polygon.length = 0;
+                }
+            }
+
+            //Show all Districts
+            $scope.allDistricts = function() {
+                $scope.dclicked = !$scope.dclicked;
+                if ($scope.dclicked) {
+                    for (var i = 0; i < $scope.allUnits.length; i++) {
+                        if ($scope.allUnits[i].levelName === 'District') {
+                            createPolygon($scope.allUnits[i], true);
+                        }
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < polygons.length; i ++) {
+                        if (polygons[i].level_name === 'District')
+                            polygons[i].setMap(null);
+                    }
+                    polygon.length = 0;
+
+                }
+
+            }
 
             //watch for updates
             $scope.$watch(function() {
@@ -632,7 +650,7 @@
     })
         //Controller for adding new facilities
 
-        .controller('AddUnitController', function($scope, SharedVariables, $uibModalInstance, marker, orgUnitss, changeUnits, orgUnits) {  //Add addUnits?
+        .controller('AddUnitController', function($scope, SharedVariables, $uibModalInstance, marker, changeUnits, orgUnits) {  //Add addUnits?
 
             var allUnits, position, addedID;
 
@@ -672,7 +690,7 @@
 
             // Add a new unit
             $scope.addUnit = function() {
-                orgUnitss.save($scope.addFacility, function(addedObject) {
+                orgUnits.createUnit().save($scope.addFacility, function(addedObject) {
 
                         // This is the ID of the recently added object
 
